@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import WriteOnCard from './WriteOnCard';
-import SVGPreview from './SVGPreview'; // Import the SVGPreview component
-
+import SVGPreview from './SVGPreview';
 const letters: string[] = [
   'a', 'b', 'c', 'd', 'e', 'f', 'g',
   'h', 'i', 'j', 'k', 'l', 'm', 'n',
@@ -78,8 +77,8 @@ const LetterGrid: React.FC = () => {
               {letterPaths[selectedLetter] ? (
                 <SVGPreview
                   path={letterPaths[selectedLetter]}
-                  width={400} // Dynamically set preview width
-                  height={400} // Dynamically set preview height
+                  width={400}
+                  height={400}
                 />
               ) : (
                 <p>Loading Teeline version...</p>

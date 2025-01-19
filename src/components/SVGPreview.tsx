@@ -11,7 +11,7 @@ const SVGPreview: React.FC<SVGPreviewProps> = ({
   path,
   width = 400,
   height = 400,
-  viewBox = "0 0 720 720", // Default to full size
+  viewBox = "-100 -100 300 400", 
 }) => {
   return (
     <div
@@ -25,7 +25,7 @@ const SVGPreview: React.FC<SVGPreviewProps> = ({
         width="100%"
         height="100%"
         viewBox={viewBox}
-        preserveAspectRatio="xMidYMid meet" // Ensure centering
+        preserveAspectRatio="xMidYMid meet"
         xmlns="http://www.w3.org/2000/svg"
         style={styles.svg}
       >
