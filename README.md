@@ -1,50 +1,58 @@
-# React + TypeScript + Vite
+# Teeline Shorthand Practice App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Overview
+The Teeline Shorthand Practice App is a web application designed to help users learn the Teeline shorthand alphabet. Inspired by Duolingo's tracing system for non-Romanized characters (e.g., learning Hanzi in Mandarin) and Teeline-Online's resources, this app provides an interactive and engaging way to practice shorthand writing.
 
-Currently, two official plugins are available:
+Using a handwriting component built with the Konva canvas library, users can trace SVG-based letter cards to learn Teeline symbols. Traces are automatically categorized into "good" and "need more practice" piles, allowing users to focus on areas where they need improvement.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
+- **Interactive Tracing:** Users can trace over SVG letters to practice writing Teeline symbols.
+- **Feedback System:** Traces are evaluated and sorted into two piles: "good" and "need more practice."
+- **Teeline Alphabet:** The app focuses on the Teeline shorthand alphabet, using SVGs sourced from Teeline-Online.
+- **User-Friendly Interface:** A simple and intuitive design makes it easy for anyone to get started.
 
-## Expanding the ESLint configuration
+## Inspiration
+This project draws inspiration from:
+- **Duolingo:** Specifically, the tracing system used for learning Hanzi in Mandarin, which allows users to interactively practice character writing.
+- **Teeline-Online:** The base SVGs for the Teeline symbols were sourced from this website, which provides a wealth of resources for learning Teeline shorthand.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+## Technologies Used
+- **TypeScript, React, and Vite:** For building the app's frontend.
+- **Konva Canvas Library:** For creating the handwriting and tracing components.
+- **SVG Graphics:** For rendering Teeline symbols.
 
-- Configure the top-level `parserOptions` property like this:
+## Installation
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/toeten/teeline-practice-app.git
+   ```
+2. Navigate to the project directory:
+   ```bash
+   cd teeline-practice-app
+   ```
+3. Install dependencies:
+   ```bash
+   npm install
+   ```
+4. Start the development server:
+   ```bash
+   npm run dev
+   ```
+5. Open the app in your browser at `http://localhost:3000`.
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+## Usage
+1. Select a letter card to begin tracing.
+2. Use your mouse or touch input to trace the displayed symbol.
+3. Complete your trace and see instant feedback on accuracy.
+4. Continue practicing until all letters are in the "good" pile!
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+## Acknowledgments
+- **Duolingo:** For inspiring the interactive tracing feature.
+- **Teeline-Online:** For providing the SVG resources that form the foundation of this app.
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+## License
+This project is licensed under the MIT License. See the `LICENSE` file for details.
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+---
+Happy learning and tracing!
+
