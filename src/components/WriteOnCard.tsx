@@ -54,7 +54,7 @@ const WriteOnCard: React.FC<WriteOnCardProps> = ({ svgPath, onComplete }) => {
     const similarity = calculateSimilarity(normalizedUserPoints, normalizedSvgPoints);
 
     // Determine correctness (threshold can be adjusted)
-    const isCorrect = similarity > 0.7; // Adjust threshold as needed
+    const isCorrect = similarity > 0.5; // Adjust threshold as needed
 
     onComplete(isCorrect, similarity);
   };
