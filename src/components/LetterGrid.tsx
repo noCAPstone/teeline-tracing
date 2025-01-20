@@ -53,6 +53,15 @@ const LetterGrid: React.FC = () => {
     setSelectedLetter(letter);
     setIsTracing(false);
   };
+  
+  const handleNextCharacter = () => {
+    const currentIndex = letters.indexOf(selectedLetter!);
+    const nextLetter = letters[(currentIndex + 1) % letters.length]; // Wrap around
+    setSelectedLetter(nextLetter);
+    setIsTracing(false);
+  };
+  
+  
 
   const handleStartTracing = () => {
     setIsTracing(true);
@@ -90,11 +99,13 @@ const LetterGrid: React.FC = () => {
       {selectedLetter ? (
         <div style={styles.previewContainer}>
           {isTracing ? (
-            <WriteOnCard
-              svgPath={letterPaths[selectedLetter]}
-              onComplete={handleTraceComplete}
-              onBack={() => setSelectedLetter(null)}
-            />
+          <WriteOnCard
+          svgPath={letterPaths[selectedLetter]}
+          onComplete={handleTraceComplete}
+          onBack={() => setSelectedLetter(null)}
+          onNext={handleNextCharacter}
+        />        
+        
           ) : (
             <>
               <h2 style={styles.title}>Teeline Version: {selectedLetter.toUpperCase()}</h2>
