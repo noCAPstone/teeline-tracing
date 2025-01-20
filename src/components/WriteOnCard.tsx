@@ -6,7 +6,7 @@ import { calculateSimilarity } from './calculateSimilarity';
 type WriteOnCardProps = {
   svgPath: string;
   onComplete: (isCorrect: boolean, similarity: number) => void;
-  onBack: () => void; // Function to handle going back
+  onBack: () => void; 
 };
 
 const WriteOnCard: React.FC<WriteOnCardProps> = ({ svgPath, onComplete, onBack }) => {
@@ -59,7 +59,7 @@ const WriteOnCard: React.FC<WriteOnCardProps> = ({ svgPath, onComplete, onBack }
       }
     }
   };
-  
+
   const handleMouseUp = () => {
     setIsDrawing(false);
   };
