@@ -33,18 +33,23 @@ const WriteOnCard: React.FC<WriteOnCardProps> = ({ svgPath, onComplete, onBack }
 
   const handleMouseMove = (event: any) => {
     if (!isDrawing) return;
-
+  
     const pos = event.target.getStage().getPointerPosition();
     if (isWithinBounds(pos)) {
       if (isErasing) {
-        const newLines = lines.filter((line) => {
-          const points = line.points;
-          return !points.some((_, i) =>
-            i % 2 === 0
-              ? Math.hypot(pos.x - points[i], pos.y - points[i + 1]) < 10
-              : false
-          );
-        });
+        const newLines = lines.map((line) => {
+          const filteredPoints = [];
+          for (let i = 0; i < line.points.length; i += 2) {
+            const pointX = line.points[i];
+            const pointY = line.points[i + 1];
+            const distance = Math.hypot(pos.x - pointX, pos.y - pointY);
+
+            if (distance >= 10) {
+              filteredPoints.push(pointX, pointY);
+            }
+          }
+          return { points: filteredPoints };
+        }).filter((line) => line.points.length > 0);
         setLines(newLines);
       } else {
         const lastLine = lines[lines.length - 1];
@@ -54,7 +59,7 @@ const WriteOnCard: React.FC<WriteOnCardProps> = ({ svgPath, onComplete, onBack }
       }
     }
   };
-
+  
   const handleMouseUp = () => {
     setIsDrawing(false);
   };
