@@ -68,9 +68,16 @@ const LetterGrid: React.FC = () => {
         setNeedsWorkPile((prev) => [...new Set([...prev, selectedLetter])]);
         setGoodPile((prev) => prev.filter((l) => l !== selectedLetter));
       }
-      setSelectedLetter(null);
     }
     setIsTracing(false);
+  };
+
+  const handleNextLetter = () => {
+    if (selectedLetter) {
+      const currentIndex = letters.indexOf(selectedLetter);
+      const nextIndex = (currentIndex + 1) % letters.length; 
+      setSelectedLetter(letters[nextIndex]);
+    }
   };
 
   return (
@@ -82,6 +89,7 @@ const LetterGrid: React.FC = () => {
               svgPath={letterPaths[selectedLetter]}
               onComplete={handleTraceComplete}
               onBack={() => setSelectedLetter(null)}
+              onNextLetter={handleNextLetter}
             />
           ) : (
             <>
@@ -109,6 +117,7 @@ const LetterGrid: React.FC = () => {
                 style={{
                   ...styles.card,
                   ...(hoveredCardIndex === index ? styles.cardHover : {}),
+                  animationDelay: `${index * 0.1}s`,
                 }}
                 onMouseEnter={() => setHoveredCardIndex(index)}
                 onMouseLeave={() => setHoveredCardIndex(null)}
@@ -120,13 +129,13 @@ const LetterGrid: React.FC = () => {
           </div>
           <div style={styles.pilesContainer}>
             <div style={styles.pile}>
-              <h3>Good Pile</h3>
+              <h3>Good To Go</h3>
               {goodPile.map((letter) => (
                 <div key={letter}>{letter.toUpperCase()}</div>
               ))}
             </div>
             <div style={styles.pile}>
-              <h3>Needs Work Pile</h3>
+              <h3>Needs Work</h3>
               {needsWorkPile.map((letter) => (
                 <div key={letter}>{letter.toUpperCase()}</div>
               ))}
@@ -138,6 +147,7 @@ const LetterGrid: React.FC = () => {
   );
 };
 
+
 const styles: Record<string, React.CSSProperties> = {
   container: {
     display: 'flex',
@@ -145,10 +155,10 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: '100vh',
-    backgroundColor: '#e8f8f5',
+    backgroundColor: '#E6F2ED',
     padding: '20px',
-    gap: '20px',
     fontFamily: "'Baloo 2', cursive",
+    borderRadius: '16px',
   },
   grid: {
     display: 'grid',
@@ -156,33 +166,31 @@ const styles: Record<string, React.CSSProperties> = {
     gap: '30px',
     width: '100%',
     maxWidth: '800px',
-    backgroundColor: '#d5f5f0',
-    border: '4px dashed #66cdaa',
-    borderRadius: '16px',
-    padding: '20px',
-    boxShadow: '6px 6px 0px #b2e3d9',
   },
   card: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    border: '3px solid #66cdaa',
+    border: '3px solid #D1E1DB',
     borderRadius: '16px',
-    background: 'linear-gradient(135deg, #e8f8f5, #cfece6)',
-    boxShadow: '6px 6px 0px #a3dbcc',
+    background: 'linear-gradient(135deg, #A6C3BB, #D1E1DB)',
+    boxShadow: '6px 6px 0px rgba(0, 0, 0, 0.1)',
     width: '150px',
     height: '150px',
     cursor: 'pointer',
     fontSize: '24px',
     fontWeight: 'bold',
     textAlign: 'center',
-    color: '#2f4f4f',
-    transition: 'transform 0.2s, box-shadow 0.2s',
+    color: '#2F3D38',
+    opacity: 0,
+    transform: 'translateY(-50px)',
+    animation: 'dropIn 0.5s ease-out forwards',
+    transition: 'transform 0.2s ease, box-shadow 0.2s ease',
   },
   cardHover: {
     transform: 'translateY(-4px)',
-    boxShadow: '8px 8px 0px #66cdaa',
-    background: 'linear-gradient(135deg, #d5f5f0, #e8f8f5)',
+    boxShadow: '8px 8px 0px rgba(0, 0, 0, 0.3)',
+    background: 'linear-gradient(135deg, #D1E1DB, #A6C3BB)', 
   },
   previewContainer: {
     display: 'flex',
@@ -190,45 +198,33 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     gap: '20px',
     padding: '20px',
-    border: '4px dotted #66cdaa',
     borderRadius: '16px',
-    background: '#f0fcf9',
-    boxShadow: '6px 6px 0px #b2e3d9',
+    background: '#E6F2ED',
+    boxShadow: '6px 6px 0px rgba(0, 0, 0, 0.2)',
   },
   title: {
     fontSize: '28px',
     fontWeight: 'bold',
-    color: '#66cdaa',
-    textShadow: '3px 3px 0px #b2e3d9, 6px 6px 0px #d5f5f0',
+    color: '#2F3D38',
   },
   traceButton: {
     padding: '12px 24px',
-    backgroundColor: '#66cdaa',
-    color: '#ffffff',
-    border: '2px solid #a3dbcc',
+    backgroundColor: '#6D8B83',
+    color: '#FFFFFF',
     borderRadius: '16px',
     cursor: 'pointer',
-    fontSize: '18px',
-    fontWeight: 'bold',
-    boxShadow: '4px 4px 0px #b2e3d9',
-    transition: 'transform 0.2s, box-shadow 0.2s',
   },
   backButton: {
     padding: '12px 24px',
-    backgroundColor: '#b2e3d9',
-    color: '#2f4f4f',
-    border: '2px solid #66cdaa',
+    backgroundColor: '#A6C3BB',
+    color: '#2F3D38',
     borderRadius: '16px',
     cursor: 'pointer',
-    fontSize: '18px',
-    fontWeight: 'bold',
-    boxShadow: '4px 4px 0px #a3dbcc',
-    transition: 'transform 0.2s, box-shadow 0.2s',
   },
   letter: {
     fontSize: '48px',
     fontWeight: 'bold',
-    color: '#66cdaa',
+    color: '#2F3D38',
   },
   pilesContainer: {
     display: 'flex',
@@ -241,11 +237,11 @@ const styles: Record<string, React.CSSProperties> = {
   },
   pile: {
     flex: 1,
-    border: '3px dashed #66cdaa',
+    border: '3px dashed #A6C3BB',
     borderRadius: '16px',
     padding: '20px',
-    backgroundColor: '#f0fcf9',
-    boxShadow: '6px 6px 0px #b2e3d9',
+    backgroundColor: '#E6F2ED',
+    boxShadow: '6px 6px 0px rgba(0, 0, 0, 0.1)',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
