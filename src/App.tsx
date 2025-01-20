@@ -17,16 +17,20 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: '100vh',
-    backgroundColor: '#f0f0f0',
+    backgroundColor: '#e8f8f5', // Light seafoam green background
     padding: '20px',
+    boxShadow: '0px 10px 20px rgba(0, 0, 0, 0.1)', // Subtle shadow for depth
   },
   title: {
     textAlign: 'center',
     marginBottom: '20px',
-    fontSize: '32px',
-    color: '#333',
+    fontSize: '36px', // Slightly larger for better emphasis
+    color: '#66cdaa', // Seafoam green for the title text
+    fontFamily: "'Baloo 2', cursive", // Playful and retro font
+    textShadow: '3px 3px 0px #b2e3d9, 6px 6px 0px #d5f5f0', // Soft retro shadow
   },
 };
 
 export default App;
+
 

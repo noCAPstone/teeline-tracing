@@ -105,7 +105,14 @@ const WriteOnCard: React.FC<WriteOnCardProps> = ({ svgPath, onComplete, onBack }
         style={{ border: '1px solid black' }}
       >
         <Layer>
-          <Path data={svgPath} stroke="gray" strokeWidth={4} lineJoin="round" />
+        <Path
+            data={svgPath}
+            stroke="gray"
+            strokeWidth={4}
+            lineJoin="round"
+            x={150}
+            y={100}
+          />
           {lines.map((line, index) => (
             <Line
               key={index}

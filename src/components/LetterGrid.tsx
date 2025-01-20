@@ -11,14 +11,15 @@ const letters: string[] = [
 
 const LetterGrid: React.FC = () => {
   const [selectedLetter, setSelectedLetter] = useState<string | null>(null);
+  const [hoveredCardIndex, setHoveredCardIndex] = useState<number | null>(null);
   const [isTracing, setIsTracing] = useState(false);
   const [letterPaths, setLetterPaths] = useState<Record<string, string>>({});
-  const [goodPile, setGoodPile] = useState<string[]>(() => {
-    return JSON.parse(localStorage.getItem('goodPile') || '[]');
-  });
-  const [needsWorkPile, setNeedsWorkPile] = useState<string[]>(() => {
-    return JSON.parse(localStorage.getItem('needsWorkPile') || '[]');
-  });
+  const [goodPile, setGoodPile] = useState<string[]>(() =>
+    JSON.parse(localStorage.getItem('goodPile') || '[]')
+  );
+  const [needsWorkPile, setNeedsWorkPile] = useState<string[]>(() =>
+    JSON.parse(localStorage.getItem('needsWorkPile') || '[]')
+  );
 
   useEffect(() => {
     localStorage.setItem('goodPile', JSON.stringify(goodPile));
@@ -53,44 +54,22 @@ const LetterGrid: React.FC = () => {
     setSelectedLetter(letter);
     setIsTracing(false);
   };
-  
-  const handleNextCharacter = () => {
-    const currentIndex = letters.indexOf(selectedLetter!);
-    const nextLetter = letters[(currentIndex + 1) % letters.length]; // Wrap around
-    setSelectedLetter(nextLetter);
-    setIsTracing(false);
-  };
-  
-  
 
   const handleStartTracing = () => {
     setIsTracing(true);
   };
 
-  const handleTraceComplete = (isCorrect: boolean, similarity: number) => {
-    setGoodPile((prev) => {
-      const inGoodPile = prev.includes(selectedLetter!);
-      if (isCorrect && !inGoodPile) {
-        setNeedsWorkPile((needsWorkPrev) =>
-          needsWorkPrev.filter((letter) => letter !== selectedLetter!)
-        );
-        return [...prev, selectedLetter!];
+  const handleTraceComplete = (isCorrect: boolean) => {
+    if (selectedLetter) {
+      if (isCorrect) {
+        setGoodPile((prev) => [...new Set([...prev, selectedLetter])]);
+        setNeedsWorkPile((prev) => prev.filter((l) => l !== selectedLetter));
+      } else {
+        setNeedsWorkPile((prev) => [...new Set([...prev, selectedLetter])]);
+        setGoodPile((prev) => prev.filter((l) => l !== selectedLetter));
       }
-      return prev;
-    });
-
-    setNeedsWorkPile((prev) => {
-      const inNeedsWorkPile = prev.includes(selectedLetter!);
-      if (!isCorrect && !inNeedsWorkPile) {
-        setGoodPile((goodPrev) =>
-          goodPrev.filter((letter) => letter !== selectedLetter!)
-        );
-        return [...prev, selectedLetter!];
-      }
-      return prev;
-    });
-
-    setSelectedLetter(null);
+      setSelectedLetter(null);
+    }
     setIsTracing(false);
   };
 
@@ -99,22 +78,16 @@ const LetterGrid: React.FC = () => {
       {selectedLetter ? (
         <div style={styles.previewContainer}>
           {isTracing ? (
-          <WriteOnCard
-          svgPath={letterPaths[selectedLetter]}
-          onComplete={handleTraceComplete}
-          onBack={() => setSelectedLetter(null)}
-          onNext={handleNextCharacter}
-        />        
-        
+            <WriteOnCard
+              svgPath={letterPaths[selectedLetter]}
+              onComplete={handleTraceComplete}
+              onBack={() => setSelectedLetter(null)}
+            />
           ) : (
             <>
               <h2 style={styles.title}>Teeline Version: {selectedLetter.toUpperCase()}</h2>
               {letterPaths[selectedLetter] ? (
-                <SVGPreview
-                  path={letterPaths[selectedLetter]}
-                  width={400}
-                  height={400}
-                />
+                <SVGPreview path={letterPaths[selectedLetter]} width={400} height={400} />
               ) : (
                 <p>Loading Teeline version...</p>
               )}
@@ -130,10 +103,15 @@ const LetterGrid: React.FC = () => {
       ) : (
         <>
           <div style={styles.grid}>
-            {letters.map((letter) => (
+            {letters.map((letter, index) => (
               <div
                 key={letter}
-                style={styles.card}
+                style={{
+                  ...styles.card,
+                  ...(hoveredCardIndex === index ? styles.cardHover : {}),
+                }}
+                onMouseEnter={() => setHoveredCardIndex(index)}
+                onMouseLeave={() => setHoveredCardIndex(null)}
                 onClick={() => handleCardClick(letter)}
               >
                 <span style={styles.letter}>{letter.toUpperCase()}</span>
@@ -167,31 +145,44 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: '100vh',
-    backgroundColor: '#f0f0f0',
+    backgroundColor: '#e8f8f5',
     padding: '20px',
+    gap: '20px',
+    fontFamily: "'Baloo 2', cursive",
   },
   grid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
-    gap: '20px',
+    gap: '30px',
     width: '100%',
     maxWidth: '800px',
+    backgroundColor: '#d5f5f0',
+    border: '4px dashed #66cdaa',
+    borderRadius: '16px',
+    padding: '20px',
+    boxShadow: '6px 6px 0px #b2e3d9',
   },
   card: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    border: '1px solid #ccc',
-    borderRadius: '10px',
-    background: '#f9f9f9',
-    boxShadow: '0 6px 8px rgba(0, 0, 0, 0.1)',
+    border: '3px solid #66cdaa',
+    borderRadius: '16px',
+    background: 'linear-gradient(135deg, #e8f8f5, #cfece6)',
+    boxShadow: '6px 6px 0px #a3dbcc',
     width: '150px',
     height: '150px',
     cursor: 'pointer',
     fontSize: '24px',
     fontWeight: 'bold',
     textAlign: 'center',
-    color: '#333', // Dark gray for card text
+    color: '#2f4f4f',
+    transition: 'transform 0.2s, box-shadow 0.2s',
+  },
+  cardHover: {
+    transform: 'translateY(-4px)',
+    boxShadow: '8px 8px 0px #66cdaa',
+    background: 'linear-gradient(135deg, #d5f5f0, #e8f8f5)',
   },
   previewContainer: {
     display: 'flex',
@@ -199,36 +190,45 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     gap: '20px',
     padding: '20px',
-    border: '1px solid #ddd',
-    borderRadius: '12px',
-    background: '#fff',
-    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+    border: '4px dotted #66cdaa',
+    borderRadius: '16px',
+    background: '#f0fcf9',
+    boxShadow: '6px 6px 0px #b2e3d9',
   },
   title: {
-    fontSize: '24px',
+    fontSize: '28px',
     fontWeight: 'bold',
-    color: '#333', // Dark gray for main titles
+    color: '#66cdaa',
+    textShadow: '3px 3px 0px #b2e3d9, 6px 6px 0px #d5f5f0',
   },
   traceButton: {
-    padding: '10px 20px',
-    backgroundColor: '#28a745',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '5px',
+    padding: '12px 24px',
+    backgroundColor: '#66cdaa',
+    color: '#ffffff',
+    border: '2px solid #a3dbcc',
+    borderRadius: '16px',
     cursor: 'pointer',
+    fontSize: '18px',
+    fontWeight: 'bold',
+    boxShadow: '4px 4px 0px #b2e3d9',
+    transition: 'transform 0.2s, box-shadow 0.2s',
   },
   backButton: {
-    padding: '10px 20px',
-    backgroundColor: '#dc3545',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '5px',
+    padding: '12px 24px',
+    backgroundColor: '#b2e3d9',
+    color: '#2f4f4f',
+    border: '2px solid #66cdaa',
+    borderRadius: '16px',
     cursor: 'pointer',
+    fontSize: '18px',
+    fontWeight: 'bold',
+    boxShadow: '4px 4px 0px #a3dbcc',
+    transition: 'transform 0.2s, box-shadow 0.2s',
   },
   letter: {
     fontSize: '48px',
     fontWeight: 'bold',
-    color: '#333',
+    color: '#66cdaa',
   },
   pilesContainer: {
     display: 'flex',
@@ -241,33 +241,15 @@ const styles: Record<string, React.CSSProperties> = {
   },
   pile: {
     flex: 1,
-    border: '1px solid #ddd',
-    borderRadius: '12px',
-    padding: '15px',
-    backgroundColor: '#f9f9f9',
-    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+    border: '3px dashed #66cdaa',
+    borderRadius: '16px',
+    padding: '20px',
+    backgroundColor: '#f0fcf9',
+    boxShadow: '6px 6px 0px #b2e3d9',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     gap: '10px',
-    color: '#333',
-  },
-  pileTitle: {
-    fontSize: '20px',
-    fontWeight: 'bold',
-    marginBottom: '10px',
-    color: '#333',
-    textAlign: 'center',
-  },
-  pileItem: {
-    fontSize: '16px',
-    padding: '10px 15px',
-    backgroundColor: '#e6e6e6',
-    borderRadius: '8px',
-    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-    width: '100%',
-    textAlign: 'center',
-    color: '#333',
   },
 };
 

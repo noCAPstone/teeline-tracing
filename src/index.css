@@ -1,11 +1,11 @@
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: "Baloo 2", "Poppins", "Fredoka One", Inter, system-ui, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color: #2f4f4f; /* Dark slate gray for text */
+  background-color: #e8f8f5; /* Seafoam green background */
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -17,10 +17,11 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background-color: #f0f0f0;
+  background-color: #fdf8e1; /* Soft yellow for retro vibe */
   display: flex;
   justify-content: center;
   align-items: center;
+  background-image: radial-gradient(circle at top left, #b2e3d9, #d5f5f0 30%, #e8f8f5 70%);
 }
 
 #root {
@@ -31,65 +32,63 @@ body {
   width: 100%;
   max-width: 1200px;
   min-height: 100vh;
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
+  background: #ffffff;
+  border: 4px dotted #66cdaa; /* Seafoam accent border */
+  border-radius: 24px;
 }
 
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
   text-align: center;
+  font-family: "Baloo 2", cursive;
+  color: #66cdaa; /* Seafoam green for titles */
+  text-shadow: 3px 3px 0 #b2e3d9, 6px 6px 0 #d5f5f0;
 }
 
 a {
   font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
+  color: #2f4f4f; /* Slate gray */
+  text-decoration: none;
+  font-style: italic;
+  border-bottom: 2px dashed #66cdaa; /* Seafoam underline */
 }
 a:hover {
-  color: #535bf2;
+  color: #4caf88;
 }
 
 button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
+  border-radius: 16px;
+  border: 3px solid #66cdaa;
+  padding: 0.8em 1.6em;
+  font-size: 1.2em;
+  font-weight: bold;
+  font-family: "Baloo 2", cursive;
+  background: linear-gradient(135deg, #b2e3d9, #d5f5f0);
+  color: #2f4f4f;
   cursor: pointer;
-  transition: border-color 0.25s;
+  box-shadow: 4px 4px 0px #a3dbcc;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s;
 }
 button:hover {
-  border-color: #646cff;
+  transform: translate(-3px, -3px);
+  box-shadow: 6px 6px 0px #66cdaa;
 }
 button:focus,
 button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+  outline: 4px dashed #b2e3d9;
 }
 
 .letter-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 20px;
-}
-
-@media (min-width: 1024px) {
-  .letter-grid {
-    gap: 40px;
-  }
+  gap: 30px;
+  background-color: #d5f5f0;
+  padding: 20px;
+  border: 4px dashed #66cdaa;
+  border-radius: 16px;
+  box-shadow: 8px 8px 0px #a3dbcc;
 }
 
 svg {
@@ -98,15 +97,17 @@ svg {
   max-width: 100%;
   max-height: 100%;
   box-sizing: content-box;
+  filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.2));
 }
 
 path {
-  stroke: black;
-  stroke-width: 8;
+  stroke: #66cdaa;
+  stroke-width: 6;
   fill: none;
   stroke-linecap: round;
   stroke-linejoin: round;
-  opacity: 0.9;
+  opacity: 0.95;
+  stroke-dasharray: 8;
 }
 
 /* WriteOnCard Styles */
@@ -114,26 +115,28 @@ path {
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 1px solid black;
-  padding: 10px;
-  background-color: #ffffff;
-  border-radius: 12px;
+  border: 4px dotted #a3dbcc;
+  padding: 20px;
+  background-color: #f0fcf9;
+  border-radius: 16px;
+  box-shadow: 4px 4px 0px #b2e3d9;
 }
 
 .write-on-card-stage {
-  background-color: #f8f9fa;
-  border: 1px solid #ccc;
-  border-radius: 8px;
+  background-color: #e8f8f5;
+  border: 3px solid #66cdaa;
+  border-radius: 12px;
+  padding: 10px;
 }
 
 .write-on-card-path {
-  stroke: gray;
+  stroke: #4caf88;
   stroke-width: 4px;
   stroke-linejoin: round;
 }
 
 .write-on-card-line {
-  stroke: black;
-  stroke-width: 6px;
+  stroke: #2f4f4f;
+  stroke-width: 5px;
   stroke-linecap: round;
 }
