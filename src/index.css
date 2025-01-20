@@ -83,12 +83,12 @@ button:focus-visible {
 .letter-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 20px; /* Smaller gap for consistent spacing */
+  gap: 20px;
 }
 
 @media (min-width: 1024px) {
   .letter-grid {
-    gap: 40px; /* Adjust gap for larger screens */
+    gap: 40px;
   }
 }
 

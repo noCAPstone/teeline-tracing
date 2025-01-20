@@ -1,10 +1,10 @@
 import React from 'react';
 
 interface SVGPreviewProps {
-  path: string; // The SVG path data
+  path: string;
   width?: number;
   height?: number;
-  viewBox?: string; // Allow dynamic viewBox
+  viewBox?: string; 
 }
 
 const SVGPreview: React.FC<SVGPreviewProps> = ({

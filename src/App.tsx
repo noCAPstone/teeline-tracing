@@ -16,9 +16,9 @@ const styles: Record<string, React.CSSProperties> = {
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: '100vh', // Ensures full viewport height
-    backgroundColor: '#f0f0f0', // Optional background color for contrast
-    padding: '20px', // Adds spacing around the content
+    minHeight: '100vh',
+    backgroundColor: '#f0f0f0',
+    padding: '20px',
   },
   title: {
     textAlign: 'center',

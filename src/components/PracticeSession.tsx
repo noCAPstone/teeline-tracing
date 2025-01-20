@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 interface Card {
   id: string;
-  content: string; // For example, SVG or letter representation
+  content: string;
 }
 
 const PracticeApp: React.FC = () => {
@@ -11,7 +11,6 @@ const PracticeApp: React.FC = () => {
   const [currentCard, setCurrentCard] = useState<Card | null>(null);
 
   useEffect(() => {
-    // Load from local storage on mount
     const savedGoodPile = localStorage.getItem('goodPile');
     const savedNeedsWorkPile = localStorage.getItem('needsWorkPile');
 
@@ -20,7 +19,6 @@ const PracticeApp: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    // Save to local storage whenever piles change
     localStorage.setItem('goodPile', JSON.stringify(goodPile));
     localStorage.setItem('needsWorkPile', JSON.stringify(needsWorkPile));
   }, [goodPile, needsWorkPile]);

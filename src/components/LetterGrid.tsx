@@ -62,7 +62,6 @@ const LetterGrid: React.FC = () => {
     setGoodPile((prev) => {
       const inGoodPile = prev.includes(selectedLetter!);
       if (isCorrect && !inGoodPile) {
-        // Move from Needs Work to Good if necessary
         setNeedsWorkPile((needsWorkPrev) =>
           needsWorkPrev.filter((letter) => letter !== selectedLetter!)
         );
@@ -74,7 +73,6 @@ const LetterGrid: React.FC = () => {
     setNeedsWorkPile((prev) => {
       const inNeedsWorkPile = prev.includes(selectedLetter!);
       if (!isCorrect && !inNeedsWorkPile) {
-        // Move from Good to Needs Work if necessary
         setGoodPile((goodPrev) =>
           goodPrev.filter((letter) => letter !== selectedLetter!)
         );
@@ -95,7 +93,7 @@ const LetterGrid: React.FC = () => {
             <WriteOnCard
               svgPath={letterPaths[selectedLetter]}
               onComplete={handleTraceComplete}
-              onBack={() => setSelectedLetter(null)} // Reset selected letter
+              onBack={() => setSelectedLetter(null)}
             />
           ) : (
             <>
@@ -219,7 +217,7 @@ const styles: Record<string, React.CSSProperties> = {
   letter: {
     fontSize: '48px',
     fontWeight: 'bold',
-    color: '#333', // Dark gray for letters
+    color: '#333',
   },
   pilesContainer: {
     display: 'flex',
@@ -241,13 +239,13 @@ const styles: Record<string, React.CSSProperties> = {
     flexDirection: 'column',
     alignItems: 'center',
     gap: '10px',
-    color: '#333', // Dark gray for pile text
+    color: '#333',
   },
   pileTitle: {
     fontSize: '20px',
     fontWeight: 'bold',
     marginBottom: '10px',
-    color: '#333', // Dark gray for pile titles
+    color: '#333',
     textAlign: 'center',
   },
   pileItem: {
@@ -258,7 +256,7 @@ const styles: Record<string, React.CSSProperties> = {
     boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
     width: '100%',
     textAlign: 'center',
-    color: '#333', // Dark gray for pile items
+    color: '#333',
   },
 };
 
