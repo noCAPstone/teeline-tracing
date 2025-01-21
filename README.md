@@ -1,7 +1,10 @@
-# Teeline Shorthand Practice App
+# Teeline Tracing
+
+![Teeline Tracers](./public/YouDoodle.png)
+
 
 ## Overview
-The Teeline Shorthand Practice App is a web application designed to help users learn the Teeline shorthand alphabet. Inspired by Duolingo's tracing system for non-Romanized characters (e.g., learning Hanzi in Mandarin) and Teeline-Online's resources, this app provides an interactive and engaging way to practice shorthand writing.
+Teeline Tracing is a web application designed to help users learn the Teeline shorthand alphabet. Inspired by Duolingo's tracing system for non-Romanized characters (e.g., learning Hanzi in Mandarin) and Teeline-Online's resources, this app provides an interactive and engaging way to practice shorthand writing.
 
 Using a handwriting component built with the Konva canvas library, users can trace SVG-based letter cards to learn Teeline symbols. Traces are automatically categorized into "good" and "need more practice" piles, allowing users to focus on areas where they need improvement.
 
