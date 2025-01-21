@@ -7,16 +7,46 @@ export const normalizePoints = (points: number[]): number[] => {
   const minY = Math.min(...yPoints);
   const maxY = Math.max(...yPoints);
 
+  const rangeX = maxX - minX || 1; // Avoid division by zero
+  const rangeY = maxY - minY || 1; // Avoid division by zero
+
   return points.map((val, i) =>
-    i % 2 === 0 ? (val - minX) / (maxX - minX) : (val - minY) / (maxY - minY)
+    i % 2 === 0 ? (val - minX) / rangeX : (val - minY) / rangeY
   );
 };
 
+
 export const normalizeSvgPath = (svgPath: string): number[] => {
   const commands = svgPath.match(/[MLHVCSQTAZ][^MLHVCSQTAZ]*/g);
-  const points = commands
-    ?.flatMap((cmd) => cmd.slice(1).trim().split(/[\s,]+/).map(Number))
-    .filter((p) => !isNaN(p)) || [];
+  let currentX = 0;
+  let currentY = 0;
+  const points: number[] = [];
+
+  commands?.forEach((cmd) => {
+    const type = cmd[0];
+    const values = cmd
+      .slice(1)
+      .trim()
+      .split(/[\s,]+/)
+      .map(Number)
+      .filter((v) => !isNaN(v));
+
+    if (type === "M" || type === "L") {
+      // Move or Line to
+      currentX = values[0];
+      currentY = values[1];
+      points.push(currentX, currentY);
+    } else if (type === "H") {
+      // Horizontal line
+      currentX = values[0];
+      points.push(currentX, currentY);
+    } else if (type === "V") {
+      // Vertical line
+      currentY = values[0];
+      points.push(currentX, currentY);
+    }
+  });
 
   return normalizePoints(points);
 };
+
