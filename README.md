@@ -1,6 +1,6 @@
 # Teeline Tracing
 
-![Teeline Tracers](./public/YouDoodle.png)
+![Teeline Tracers](./public/ttlogo.png)
 
 
 ## Overview
