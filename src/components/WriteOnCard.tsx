@@ -81,14 +81,18 @@ const WriteOnCard: React.FC<WriteOnCardProps> = ({ svgPath, onComplete, onBack, 
 
     const similarity = calculateSimilarity(normalizedUserPoints, normalizedSvgPoints);
     const isCorrect = similarity >= 0.5;
+    
 
     setFeedback(
       isCorrect
         ? `Great job! Similarity: ${(similarity * 100).toFixed(2)}%`
         : `Keep practicing! Similarity: ${(similarity * 100).toFixed(2)}%`
     );
-
+  
     setShowNextButton(true); 
+
+    // onComplete(isCorrect, similarity);
+
   };
 
   const handleNextLetterClick = () => {
