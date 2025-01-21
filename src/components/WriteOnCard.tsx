@@ -6,16 +6,14 @@ import { calculateSimilarity } from './calculateSimilarity';
 type WriteOnCardProps = {
   svgPath: string;
   onComplete: (isCorrect: boolean, similarity: number) => void;
-  onBack: () => void;
-  onNextLetter: () => void; 
+  onBack: () => void; 
 };
 
-const WriteOnCard: React.FC<WriteOnCardProps> = ({ svgPath, onComplete, onBack, onNextLetter }) => {
+const WriteOnCard: React.FC<WriteOnCardProps> = ({ svgPath, onComplete, onBack }) => {
   const [lines, setLines] = useState<{ points: number[] }[]>([]);
   const [isDrawing, setIsDrawing] = useState(false);
   const [isErasing, setIsErasing] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
-  const [showNextButton, setShowNextButton] = useState(false); 
 
   const STAGE_WIDTH = 400;
   const STAGE_HEIGHT = 400;
@@ -35,25 +33,23 @@ const WriteOnCard: React.FC<WriteOnCardProps> = ({ svgPath, onComplete, onBack, 
 
   const handleMouseMove = (event: any) => {
     if (!isDrawing) return;
-
+  
     const pos = event.target.getStage().getPointerPosition();
     if (isWithinBounds(pos)) {
       if (isErasing) {
-        const newLines = lines
-          .map((line) => {
-            const filteredPoints = [];
-            for (let i = 0; i < line.points.length; i += 2) {
-              const pointX = line.points[i];
-              const pointY = line.points[i + 1];
-              const distance = Math.hypot(pos.x - pointX, pos.y - pointY);
+        const newLines = lines.map((line) => {
+          const filteredPoints = [];
+          for (let i = 0; i < line.points.length; i += 2) {
+            const pointX = line.points[i];
+            const pointY = line.points[i + 1];
+            const distance = Math.hypot(pos.x - pointX, pos.y - pointY);
 
-              if (distance >= 10) {
-                filteredPoints.push(pointX, pointY);
-              }
+            if (distance >= 10) {
+              filteredPoints.push(pointX, pointY);
             }
-            return { points: filteredPoints };
-          })
-          .filter((line) => line.points.length > 0);
+          }
+          return { points: filteredPoints };
+        }).filter((line) => line.points.length > 0);
         setLines(newLines);
       } else {
         const lastLine = lines[lines.length - 1];
@@ -80,26 +76,18 @@ const WriteOnCard: React.FC<WriteOnCardProps> = ({ svgPath, onComplete, onBack, 
     const normalizedSvgPoints = normalizeSvgPath(svgPath);
 
     const similarity = calculateSimilarity(normalizedUserPoints, normalizedSvgPoints);
-    const isCorrect = similarity >= 0.5;
-    
+    const isCorrect = similarity > 0.5;
 
     setFeedback(
       isCorrect
         ? `Great job! Similarity: ${(similarity * 100).toFixed(2)}%`
         : `Keep practicing! Similarity: ${(similarity * 100).toFixed(2)}%`
     );
-  
-    setShowNextButton(true); 
 
-    // onComplete(isCorrect, similarity);
-
-  };
-
-  const handleNextLetterClick = () => {
-    setLines([]); 
-    setFeedback(null);
-    setShowNextButton(false); 
-    onNextLetter();
+    setTimeout(() => {
+      setFeedback(null);
+      onComplete(isCorrect, similarity);
+    }, 2000);
   };
 
   const toggleEraser = () => {
@@ -117,7 +105,7 @@ const WriteOnCard: React.FC<WriteOnCardProps> = ({ svgPath, onComplete, onBack, 
         style={{ border: '1px solid black' }}
       >
         <Layer>
-          <Path
+        <Path
             data={svgPath}
             stroke="gray"
             strokeWidth={4}
@@ -146,7 +134,7 @@ const WriteOnCard: React.FC<WriteOnCardProps> = ({ svgPath, onComplete, onBack, 
           Done Tracing
         </button>
         <button style={styles.backButton} onClick={onBack}>
-          Back to Grid
+          Back
         </button>
       </div>
 
@@ -154,12 +142,6 @@ const WriteOnCard: React.FC<WriteOnCardProps> = ({ svgPath, onComplete, onBack, 
         <div style={styles.feedbackPopup}>
           <p style={styles.feedbackText}>{feedback}</p>
         </div>
-      )}
-
-      {showNextButton && (
-        <button style={styles.nextButton} onClick={handleNextLetterClick}>
-          Move to Next Letter
-        </button>
       )}
     </div>
   );
@@ -224,18 +206,6 @@ const styles: Record<string, React.CSSProperties> = {
     fontWeight: 'bold',
     color: '#333',
   },
-  nextButton: {
-    marginTop: '20px',
-    padding: '10px 20px',
-    backgroundColor: '#28a745',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    fontSize: '16px',
-    fontWeight: 'bold',
-  },
 };
 
 export default WriteOnCard;
-

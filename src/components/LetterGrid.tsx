@@ -77,6 +77,7 @@ const LetterGrid: React.FC = () => {
       const currentIndex = letters.indexOf(selectedLetter);
       const nextIndex = (currentIndex + 1) % letters.length; 
       setSelectedLetter(letters[nextIndex]);
+      setIsTracing(false);
     }
   };
 
@@ -88,8 +89,6 @@ const LetterGrid: React.FC = () => {
             <WriteOnCard
               svgPath={letterPaths[selectedLetter]}
               onComplete={handleTraceComplete}
-              onBack={() => setSelectedLetter(null)}
-              onNextLetter={handleNextLetter}
             />
           ) : (
             <>
@@ -101,6 +100,9 @@ const LetterGrid: React.FC = () => {
               )}
               <button style={styles.traceButton} onClick={handleStartTracing}>
                 Start Tracing
+              </button>
+              <button style={styles.nextButton} onClick={handleNextLetter}>
+                Move to Next Letter
               </button>
               <button style={styles.backButton} onClick={() => setSelectedLetter(null)}>
                 Back to Grid
@@ -147,8 +149,16 @@ const LetterGrid: React.FC = () => {
   );
 };
 
-
 const styles: Record<string, React.CSSProperties> = {
+  // Add styles for the next button
+  nextButton: {
+    padding: '12px 24px',
+    backgroundColor: '#4CAF50',
+    color: '#FFFFFF',
+    borderRadius: '16px',
+    cursor: 'pointer',
+    marginTop: '10px',
+  },
   container: {
     display: 'flex',
     flexDirection: 'column',
@@ -190,7 +200,7 @@ const styles: Record<string, React.CSSProperties> = {
   cardHover: {
     transform: 'translateY(-4px)',
     boxShadow: '8px 8px 0px rgba(0, 0, 0, 0.3)',
-    background: 'linear-gradient(135deg, #D1E1DB, #A6C3BB)', 
+    background: 'linear-gradient(135deg, #D1E1DB, #A6C3BB)',
   },
   previewContainer: {
     display: 'flex',
