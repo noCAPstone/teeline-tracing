@@ -17,7 +17,7 @@ Using a handwriting component built with the Konva canvas library, users can tra
 ## Inspiration
 This project draws inspiration from:
 - **Duolingo:** Specifically, the tracing system used for learning Hanzi in Mandarin, which allows users to interactively practice character writing.
-- **Teeline-Online:** The base SVGs for the Teeline symbols were sourced from this website, which provides a wealth of resources for learning Teeline shorthand.
+- **[Teeline-Online]:**(https://teeline.online/) The base SVGs for the Teeline symbols were sourced from this website, which provides a wealth of resources for learning Teeline shorthand.
 
 ## Technologies Used
 - **TypeScript, React, and Vite:** For building the app's frontend.
