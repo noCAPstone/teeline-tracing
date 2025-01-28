@@ -49,16 +49,16 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     justifyContent: 'center',
     padding: '10px',
-    border: '4px dotted #A6C3BB', // Seafoam-grey dotted border
+    border: '4px dotted #A6C3BB', 
     borderRadius: '16px',
-    background: '#E6F2ED', // Lightest seafoam-green background
-    boxShadow: '4px 4px 0px rgba(0, 0, 0, 0.2)', // Subtle shadow for depth
+    background: '#E6F2ED', 
+    boxShadow: '4px 4px 0px rgba(0, 0, 0, 0.2)', 
   },
   svg: {
     display: 'block',
     maxWidth: '100%',
     maxHeight: '100%',
-    filter: 'drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.2))', // Soft drop shadow
+    filter: 'drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.2))', 
   },
 };
 

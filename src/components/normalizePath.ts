@@ -7,8 +7,8 @@ export const normalizePoints = (points: number[]): number[] => {
   const minY = Math.min(...yPoints);
   const maxY = Math.max(...yPoints);
 
-  const rangeX = maxX - minX || 1; // Avoid division by zero
-  const rangeY = maxY - minY || 1; // Avoid division by zero
+  const rangeX = maxX - minX || 1; 
+  const rangeY = maxY - minY || 1; 
 
   return points.map((val, i) =>
     i % 2 === 0 ? (val - minX) / rangeX : (val - minY) / rangeY
@@ -32,7 +32,7 @@ export const normalizeSvgPath = (svgPath: string): number[] => {
       .filter((v) => !isNaN(v));
 
     if (type === "M" || type === "L") {
-      // Move or Line to
+      
       currentX = values[0];
       currentY = values[1];
       points.push(currentX, currentY);
