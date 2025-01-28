@@ -26,38 +26,52 @@ const LetterGrid: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const docRef = doc(db, "piles", "letters"); 
+        const docRef = doc(db, "piles", "letters");
         const docSnap = await getDoc(docRef);
-
+  
         if (docSnap.exists()) {
           const data = docSnap.data();
-          setGoodPile(data.goodPile || []);
-          setNeedsWorkPile(data.needsWorkPile || []);
-        } else {
-          console.log("No user data found, initializing...");
-          await setDoc(docRef, { goodPile: [], needsWorkPile: [] });
+          console.log("Fetched from Firestore:", data);
+          setGoodPile((prev) => (prev.length > 0 ? prev : data.goodPile || []));
+          setNeedsWorkPile((prev) => (prev.length > 0 ? prev : data.needsWorkPile || []));
+        // } else {
+        //   console.log("No user data found, initializing...");
+        //   await setDoc(docRef, { goodPile: [], needsWorkPile: [] })
+        //     .then(() => console.log("Document successfully initialized."))
+        //     .catch((error) => console.error("Error initializing Firestore document:", error));
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
       }
     };
-
+  
     fetchData();
   }, []);
-
   
+
+  let previousData = { goodPile: [], needsWorkPile: [] };
   useEffect(() => {
-    const saveData = async () => {
+    const debounceSave = setTimeout(async () => {
       try {
         const docRef = doc(db, "piles", "letters");
-        await setDoc(docRef, { goodPile, needsWorkPile });
+  
+        // Avoid redundant writes
+        if (
+          JSON.stringify(previousData.goodPile) !== JSON.stringify(goodPile) ||
+          JSON.stringify(previousData.needsWorkPile) !== JSON.stringify(needsWorkPile)
+        ) {
+          await setDoc(docRef, { goodPile, needsWorkPile });
+          previousData = { goodPile: [], needsWorkPile: [] }; // Update saved reference
+          console.log("Data successfully saved to Firestore:", { goodPile, needsWorkPile });
+        }
       } catch (error) {
         console.error("Error saving user data:", error);
       }
-    };
-
-    saveData();
+    }, 500); // Delay writes by 500ms
+  
+    return () => clearTimeout(debounceSave); // Clear timeout on dependency change
   }, [goodPile, needsWorkPile]);
+  
 
   useEffect(() => {
     const loadPaths = async () => {
