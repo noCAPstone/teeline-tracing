@@ -9,7 +9,7 @@ type WriteOnCardProps = {
   
 };
 
-const WriteOnCard: React.FC<WriteOnCardProps> = ({ svgPath, onComplete, onBack }) => {
+const WriteOnCard: React.FC<WriteOnCardProps> = ({ svgPath, onComplete }) => {
   const [lines, setLines] = useState<{ points: number[] }[]>([]);
   const [isDrawing, setIsDrawing] = useState(false);
   const [isErasing, setIsErasing] = useState(false);
