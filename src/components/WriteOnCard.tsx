@@ -6,7 +6,7 @@ import { calculateSimilarity } from './calculateSimilarity';
 type WriteOnCardProps = {
   svgPath: string;
   onComplete: (isCorrect: boolean, similarity: number) => void;
-  onBack?: () => void; 
+  
 };
 
 const WriteOnCard: React.FC<WriteOnCardProps> = ({ svgPath, onComplete, onBack }) => {
@@ -133,9 +133,7 @@ const WriteOnCard: React.FC<WriteOnCardProps> = ({ svgPath, onComplete, onBack }
         <button style={styles.button} onClick={handleSubmitTracing}>
           Done Tracing
         </button>
-        <button style={styles.backButton} onClick={onBack}>
-          Back
-        </button>
+
       </div>
 
       {feedback && (
