@@ -11,7 +11,7 @@ const letters: string[] = [
   'o', 'p', 'q', 'r', 's', 't', 'u',
   'v', 'w', 'x', 'y', 'z',
 ];
-
+const base = '/teeline-tracing';
 const LetterGrid: React.FC = () => {
   const [selectedLetter, setSelectedLetter] = useState<string | null>(null);
   const [hoveredCardIndex, setHoveredCardIndex] = useState<number | null>(null);
@@ -75,25 +75,33 @@ const LetterGrid: React.FC = () => {
 
   useEffect(() => {
     const loadPaths = async () => {
-      const paths: Record<string, string> = {};
-      for (const letter of letters) {
-        try {
-          const response = await fetch(`/normalized_svgs/${letter}.svg`);
-          const text = await response.text();
+      try {
+        const responses = await Promise.all(
+          letters.map(letter =>
+            fetch(`${base}/normalized_svgs/${letter}.svg`).then(res => res.text())
+          )
+        );
+  
+        const paths: Record<string, string> = {};
+        responses.forEach((text, index) => {
+          const letter = letters[index];
           const match = text.match(/<path[^>]*d="([^"]*)"/);
           if (match) {
             paths[letter] = match[1];
+          } else {
+            console.warn(`No <path> found in SVG for letter: ${letter}`);
           }
-        } catch (error) {
-          console.error(`Failed to load SVG for letter ${letter}:`, error);
-        }
+        });
+  
+        setLetterPaths(paths);
+      } catch (error) {
+        console.error("Error loading SVG paths:", error);
       }
-      setLetterPaths(paths);
     };
-
+  
     loadPaths();
   }, []);
-
+  
   const handleCardClick = (letter: string) => {
     setSelectedLetter(letter);
     setIsTracing(false);

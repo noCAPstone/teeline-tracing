@@ -17,7 +17,7 @@ const padSimplePaths = (path: number[], minLength: number): number[] => {
     : path;
 };
 
-const calculateEuclideanDistance = (v1: number[], v2: number[], penaltyFactor = 7): number => {
+const calculateEuclideanDistance = (v1: number[], v2: number[], penaltyFactor = 10): number => {
   const maxLength = Math.max(v1.length, v2.length);
   const paddedV1 = padSimplePaths(v1, maxLength);
   const paddedV2 = padSimplePaths(v2, maxLength);
