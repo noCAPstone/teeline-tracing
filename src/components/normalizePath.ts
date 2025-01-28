@@ -7,14 +7,13 @@ export const normalizePoints = (points: number[]): number[] => {
   const minY = Math.min(...yPoints);
   const maxY = Math.max(...yPoints);
 
-  const rangeX = maxX - minX || 1; 
-  const rangeY = maxY - minY || 1; 
+  const rangeX = maxX - minX || 1;
+  const rangeY = maxY - minY || 1;
 
   return points.map((val, i) =>
     i % 2 === 0 ? (val - minX) / rangeX : (val - minY) / rangeY
   );
 };
-
 
 export const normalizeSvgPath = (svgPath: string): number[] => {
   const commands = svgPath.match(/[MLHVCSQTAZ][^MLHVCSQTAZ]*/g);
@@ -32,16 +31,13 @@ export const normalizeSvgPath = (svgPath: string): number[] => {
       .filter((v) => !isNaN(v));
 
     if (type === "M" || type === "L") {
-      
       currentX = values[0];
       currentY = values[1];
       points.push(currentX, currentY);
     } else if (type === "H") {
-      // Horizontal line
       currentX = values[0];
       points.push(currentX, currentY);
     } else if (type === "V") {
-      // Vertical line
       currentY = values[0];
       points.push(currentX, currentY);
     }
@@ -49,4 +45,5 @@ export const normalizeSvgPath = (svgPath: string): number[] => {
 
   return normalizePoints(points);
 };
+
 
