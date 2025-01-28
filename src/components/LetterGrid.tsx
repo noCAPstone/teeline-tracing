@@ -20,7 +20,7 @@ const LetterGrid: React.FC = () => {
   const [goodPile, setGoodPile] = useState<string[]>([]);
   const [needsWorkPile, setNeedsWorkPile] = useState<string[]>([]);
 
-  const userId = "exampleUserId"; 
+
 
 
   useEffect(() => {
