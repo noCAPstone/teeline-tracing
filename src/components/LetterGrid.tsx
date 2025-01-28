@@ -34,11 +34,11 @@ const LetterGrid: React.FC = () => {
           console.log("Fetched from Firestore:", data);
           setGoodPile((prev) => (prev.length > 0 ? prev : data.goodPile || []));
           setNeedsWorkPile((prev) => (prev.length > 0 ? prev : data.needsWorkPile || []));
-        // } else {
-        //   console.log("No user data found, initializing...");
-        //   await setDoc(docRef, { goodPile: [], needsWorkPile: [] })
-        //     .then(() => console.log("Document successfully initialized."))
-        //     .catch((error) => console.error("Error initializing Firestore document:", error));
+         } else {
+           console.log("No user data found, initializing...");
+           await setDoc(docRef, { goodPile: [], needsWorkPile: [] })
+            .then(() => console.log("Document successfully initialized."))
+             .catch((error) => console.error("Error initializing Firestore document:", error));
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
