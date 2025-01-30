@@ -1,17 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import WriteOnCard from './WriteOnCard';
-import SVGPreview from './SVGPreview';
-import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
-import { app } from "../firebaseConfig"; 
+import React, { useState, useEffect } from "react";
+import WriteOnCard from "./WriteOnCard";
+import SVGPreview from "./SVGPreview";
+import { getFirestore, collection, doc, getDocs, addDoc, deleteDoc, serverTimestamp } from "firebase/firestore";
+import { app } from "../firebaseConfig";
+
 const db = getFirestore(app);
 
 const letters: string[] = [
-  'a', 'b', 'c', 'd', 'e', 'f', 'g',
-  'h', 'i', 'j', 'k', 'l', 'm', 'n',
-  'o', 'p', 'q', 'r', 's', 't', 'u',
-  'v', 'w', 'x', 'y', 'z',
+  "a", "b", "c", "d", "e", "f", "g",
+  "h", "i", "j", "k", "l", "m", "n",
+  "o", "p", "q", "r", "s", "t", "u",
+  "v", "w", "x", "y", "z",
 ];
-const base = '/teeline-tracing';
+
+const base = "/teeline-tracing";
+
 const LetterGrid: React.FC = () => {
   const [selectedLetter, setSelectedLetter] = useState<string | null>(null);
   const [hoveredCardIndex, setHoveredCardIndex] = useState<number | null>(null);
@@ -20,88 +23,116 @@ const LetterGrid: React.FC = () => {
   const [goodPile, setGoodPile] = useState<string[]>([]);
   const [needsWorkPile, setNeedsWorkPile] = useState<string[]>([]);
 
-
-
+  const getUserId = () => {
+    let userId = localStorage.getItem("userId");
+    if (!userId) {
+      userId = crypto.randomUUID();
+      localStorage.setItem("userId", userId);
+    }
+    return userId;
+  };
+  const userId = getUserId();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const docRef = doc(db, "piles", "letters");
-        const docSnap = await getDoc(docRef);
-  
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          console.log("Fetched from Firestore:", data);
-          setGoodPile((prev) => (prev.length > 0 ? prev : data.goodPile || []));
-          setNeedsWorkPile((prev) => (prev.length > 0 ? prev : data.needsWorkPile || []));
-         } else {
-           console.log("No user data found, initializing...");
-           await setDoc(docRef, { goodPile: [], needsWorkPile: [] })
-            .then(() => console.log("Document successfully initialized."))
-             .catch((error) => console.error("Error initializing Firestore document:", error));
-        }
+        const userPilesRef = collection(db, `users/${userId}/piles`);
+        const snapshot = await getDocs(userPilesRef);
+
+        const goodPileData: string[] = [];
+        const needsWorkPileData: string[] = [];
+
+        snapshot.forEach((doc) => {
+          const data = doc.data();
+          if (data.pileType === "good") {
+            goodPileData.push(data.letter);
+          } else {
+            needsWorkPileData.push(data.letter);
+          }
+        });
+
+        setGoodPile(goodPileData);
+        setNeedsWorkPile(needsWorkPileData);
       } catch (error) {
         console.error("Error fetching user data:", error);
       }
     };
-  
+
     fetchData();
   }, []);
-  
 
-  let previousData = { goodPile: [], needsWorkPile: [] };
-  useEffect(() => {
-    const debounceSave = setTimeout(async () => {
-      try {
-        const docRef = doc(db, "piles", "letters");
-  
-        // Avoid redundant writes
-        if (
-          JSON.stringify(previousData.goodPile) !== JSON.stringify(goodPile) ||
-          JSON.stringify(previousData.needsWorkPile) !== JSON.stringify(needsWorkPile)
-        ) {
-          await setDoc(docRef, { goodPile, needsWorkPile });
-          previousData = { goodPile: [], needsWorkPile: [] }; // Update saved reference
-          console.log("Data successfully saved to Firestore:", { goodPile, needsWorkPile });
+  const addLetterToPile = async (letter: string, pileType: "good" | "needsWork") => {
+    try {
+      const userPilesRef = collection(db, `users/${userId}/piles`);
+
+      const snapshot = await getDocs(userPilesRef);
+      let exists = false;
+      snapshot.forEach((docItem) => {
+        if (docItem.data().letter === letter && docItem.data().pileType === pileType) {
+          exists = true;
         }
-      } catch (error) {
-        console.error("Error saving user data:", error);
+      });
+
+      if (!exists) {
+        await addDoc(userPilesRef, {
+          pileType,
+          letter,
+          createdAt: serverTimestamp(),
+        });
+
+        setGoodPile((prev) => (pileType === "good" ? [...prev, letter] : prev.filter((l) => l !== letter)));
+        setNeedsWorkPile((prev) => (pileType === "needsWork" ? [...prev, letter] : prev.filter((l) => l !== letter)));
       }
-    }, 500); // Delay writes by 500ms
-  
-    return () => clearTimeout(debounceSave); // Clear timeout on dependency change
-  }, [goodPile, needsWorkPile]);
-  
+    } catch (error) {
+      console.error("Error adding letter to pile:", error);
+    }
+  };
+
+  const deleteLetterFromPile = async (letter: string) => {
+    try {
+      const userPilesRef = collection(db, `users/${userId}/piles`);
+      const snapshot = await getDocs(userPilesRef);
+
+      snapshot.forEach(async (docItem) => {
+        if (docItem.data().letter === letter) {
+          await deleteDoc(doc(db, `users/${userId}/piles/${docItem.id}`));
+        }
+      });
+
+      setGoodPile((prev) => prev.filter((l) => l !== letter));
+      setNeedsWorkPile((prev) => prev.filter((l) => l !== letter));
+    } catch (error) {
+      console.error("Error deleting letter from pile:", error);
+    }
+  };
 
   useEffect(() => {
     const loadPaths = async () => {
       try {
         const responses = await Promise.all(
-          letters.map(letter =>
-            fetch(`${base}/normalized_svgs/${letter}.svg`).then(res => res.text())
+          letters.map((letter) =>
+            fetch(`${base}/normalized_svgs/${letter}.svg`).then((res) => res.text())
           )
         );
-  
+
         const paths: Record<string, string> = {};
         responses.forEach((text, index) => {
           const letter = letters[index];
           const match = text.match(/<path[^>]*d="([^"]*)"/);
           if (match) {
             paths[letter] = match[1];
-          } else {
-            console.warn(`No <path> found in SVG for letter: ${letter}`);
           }
         });
-  
+
         setLetterPaths(paths);
       } catch (error) {
         console.error("Error loading SVG paths:", error);
       }
     };
-  
+
     loadPaths();
   }, []);
-  
+
   const handleCardClick = (letter: string) => {
     setSelectedLetter(letter);
     setIsTracing(false);
@@ -113,13 +144,7 @@ const LetterGrid: React.FC = () => {
 
   const handleTraceComplete = (isCorrect: boolean) => {
     if (selectedLetter) {
-      if (isCorrect) {
-        setGoodPile((prev) => [...new Set([...prev, selectedLetter])]);
-        setNeedsWorkPile((prev) => prev.filter((l) => l !== selectedLetter));
-      } else {
-        setNeedsWorkPile((prev) => [...new Set([...prev, selectedLetter])]);
-        setGoodPile((prev) => prev.filter((l) => l !== selectedLetter));
-      }
+      addLetterToPile(selectedLetter, isCorrect ? "good" : "needsWork");
     }
     setIsTracing(false);
   };
@@ -127,11 +152,12 @@ const LetterGrid: React.FC = () => {
   const handleNextLetter = () => {
     if (selectedLetter) {
       const currentIndex = letters.indexOf(selectedLetter);
-      const nextIndex = (currentIndex + 1) % letters.length; 
+      const nextIndex = (currentIndex + 1) % letters.length;
       setSelectedLetter(letters[nextIndex]);
       setIsTracing(false);
     }
   };
+
 
   return (
     <div style={styles.container}>
