@@ -5,13 +5,11 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthState
 const Auth: React.FC<{ onAuthChange: (user: User | null) => void }> = ({ onAuthChange }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [user, setUser] = useState<User | null>(null);
   const [isLogin, setIsLogin] = useState(true);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      onAuthChange(currentUser);
+      onAuthChange(currentUser); // Directly update the parent component
     });
 
     return () => unsubscribe();
