@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import WriteOnCard from "./WriteOnCard";
 import SVGPreview from "./SVGPreview";
-import { getFirestore, collection, doc, getDocs, addDoc, deleteDoc, serverTimestamp } from "firebase/firestore";
-import { app } from "../firebaseConfig";
+import Auth from "./Auth"; // Import the authentication component
+import { User, onAuthStateChanged, signOut } from "firebase/auth";
+import { getFirestore, collection, getDocs, addDoc, serverTimestamp } from "firebase/firestore";
+import { auth, app } from "../firebaseConfig";
 
 const db = getFirestore(app);
 
@@ -16,6 +18,7 @@ const letters: string[] = [
 const base = "/teeline-tracing";
 
 const LetterGrid: React.FC = () => {
+  const [user, setUser] = useState<User | null>(null);
   const [selectedLetter, setSelectedLetter] = useState<string | null>(null);
   const [hoveredCardIndex, setHoveredCardIndex] = useState<number | null>(null);
   const [isTracing, setIsTracing] = useState(false);
@@ -23,20 +26,22 @@ const LetterGrid: React.FC = () => {
   const [goodPile, setGoodPile] = useState<string[]>([]);
   const [needsWorkPile, setNeedsWorkPile] = useState<string[]>([]);
 
-  const getUserId = () => {
-    let userId = localStorage.getItem("userId");
-    if (!userId) {
-      userId = crypto.randomUUID();
-      localStorage.setItem("userId", userId);
-    }
-    return userId;
-  };
-  const userId = getUserId();
-
+  // Listen for authentication state changes
   useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // Fetch user-specific data when logged in
+  useEffect(() => {
+    if (!user) return;
+
     const fetchData = async () => {
       try {
-        const userPilesRef = collection(db, `users/${userId}/piles`);
+        const userPilesRef = collection(db, `users/${user.uid}/piles`);
         const snapshot = await getDocs(userPilesRef);
 
         const goodPileData: string[] = [];
@@ -59,14 +64,17 @@ const LetterGrid: React.FC = () => {
     };
 
     fetchData();
-  }, []);
+  }, [user]);
 
+  // Add a letter to the appropriate pile in Firestore
   const addLetterToPile = async (letter: string, pileType: "good" | "needsWork") => {
-    try {
-      const userPilesRef = collection(db, `users/${userId}/piles`);
+    if (!user) return;
 
+    try {
+      const userPilesRef = collection(db, `users/${user.uid}/piles`);
       const snapshot = await getDocs(userPilesRef);
       let exists = false;
+
       snapshot.forEach((docItem) => {
         if (docItem.data().letter === letter && docItem.data().pileType === pileType) {
           exists = true;
@@ -85,24 +93,6 @@ const LetterGrid: React.FC = () => {
       }
     } catch (error) {
       console.error("Error adding letter to pile:", error);
-    }
-  };
-
-  const deleteLetterFromPile = async (letter: string) => {
-    try {
-      const userPilesRef = collection(db, `users/${userId}/piles`);
-      const snapshot = await getDocs(userPilesRef);
-
-      snapshot.forEach(async (docItem) => {
-        if (docItem.data().letter === letter) {
-          await deleteDoc(doc(db, `users/${userId}/piles/${docItem.id}`));
-        }
-      });
-
-      setGoodPile((prev) => prev.filter((l) => l !== letter));
-      setNeedsWorkPile((prev) => prev.filter((l) => l !== letter));
-    } catch (error) {
-      console.error("Error deleting letter from pile:", error);
     }
   };
 
@@ -157,10 +147,28 @@ const LetterGrid: React.FC = () => {
       setIsTracing(false);
     }
   };
+  const handleLogout = async () => {
+    await signOut(auth);
+  };
+  
+  // If no user is logged in, show authentication form
+  if (!user) {
+    return <Auth onAuthChange={setUser} />;
+  }
 
 
   return (
     <div style={styles.container}>
+      {/* Hide top bar when a letter is selected */}
+      {!selectedLetter && (
+        <div style={styles.topBar}>
+          <h2 style={styles.title}>Welcome, {user?.email}</h2>
+          <button style={styles.logoutButton} onClick={handleLogout}>
+            Logout
+          </button>
+        </div>
+      )}
+  
       {selectedLetter ? (
         <div style={styles.previewContainer}>
           {isTracing ? (
@@ -225,7 +233,7 @@ const LetterGrid: React.FC = () => {
       )}
     </div>
   );
-};
+}
 
 const styles: Record<string, React.CSSProperties> = {
   
@@ -334,6 +342,18 @@ const styles: Record<string, React.CSSProperties> = {
     flexDirection: 'column',
     alignItems: 'center',
     gap: '10px',
+  },
+  logoutButton: {
+    width: "100%",
+    padding: "12px",
+    marginBottom: "20px",
+    backgroundColor: "#A6C3BB",
+    color: "#2F3D38",
+    border: "none",
+    borderRadius: "16px",
+    cursor: "pointer",
+    fontSize: "16px",
+    transition: "background 0.3s",
   },
 };
 
