@@ -1,9 +1,19 @@
 import React, { useState, useEffect } from "react";
 import WriteOnCard from "./WriteOnCard";
 import SVGPreview from "./SVGPreview";
-import Auth from "./Auth"; // Import the authentication component
+import Auth from "./Auth";
 import { User, onAuthStateChanged, signOut } from "firebase/auth";
-import { getFirestore, collection, getDocs, addDoc, serverTimestamp } from "firebase/firestore";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  serverTimestamp,
+  onSnapshot,
+  query,
+  where,
+  deleteDoc,
+  getDocs,
+} from "firebase/firestore";
 import { auth, app } from "../firebaseConfig";
 
 const db = getFirestore(app);
@@ -35,67 +45,70 @@ const LetterGrid: React.FC = () => {
     return () => unsubscribe();
   }, []);
 
-  // Fetch user-specific data when logged in
+  // Fetch user-specific data and listen for real-time updates
   useEffect(() => {
     if (!user) return;
 
-    const fetchData = async () => {
-      try {
-        const userPilesRef = collection(db, `users/${user.uid}/piles`);
-        const snapshot = await getDocs(userPilesRef);
+    const userPilesRef = collection(db, `users/${user.uid}/piles`);
 
-        const goodPileData: string[] = [];
-        const needsWorkPileData: string[] = [];
+    const unsubscribe = onSnapshot(userPilesRef, (snapshot) => {
+      const goodPileData: string[] = [];
+      const needsWorkPileData: string[] = [];
 
-        snapshot.forEach((doc) => {
-          const data = doc.data();
-          if (data.pileType === "good") {
-            goodPileData.push(data.letter);
-          } else {
-            needsWorkPileData.push(data.letter);
-          }
-        });
-
-        setGoodPile(goodPileData);
-        setNeedsWorkPile(needsWorkPileData);
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      }
-    };
-
-    fetchData();
-  }, [user]);
-
-  // Add a letter to the appropriate pile in Firestore
-  const addLetterToPile = async (letter: string, pileType: "good" | "needsWork") => {
-    if (!user) return;
-
-    try {
-      const userPilesRef = collection(db, `users/${user.uid}/piles`);
-      const snapshot = await getDocs(userPilesRef);
-      let exists = false;
-
-      snapshot.forEach((docItem) => {
-        if (docItem.data().letter === letter && docItem.data().pileType === pileType) {
-          exists = true;
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        if (data.pileType === "good") {
+          goodPileData.push(data.letter);
+        } else {
+          needsWorkPileData.push(data.letter);
         }
       });
 
-      if (!exists) {
-        await addDoc(userPilesRef, {
-          pileType,
-          letter,
-          createdAt: serverTimestamp(),
-        });
+      setGoodPile(goodPileData);
+      setNeedsWorkPile(needsWorkPileData);
+    });
 
-        setGoodPile((prev) => (pileType === "good" ? [...prev, letter] : prev.filter((l) => l !== letter)));
-        setNeedsWorkPile((prev) => (pileType === "needsWork" ? [...prev, letter] : prev.filter((l) => l !== letter)));
+    return () => unsubscribe(); // Cleanup listener
+  }, [user]);
+
+  // Move a letter between piles and update Firestore
+  const moveLetterBetweenPiles = async (letter: string, newPile: "good" | "needsWork") => {
+    if (!user) return;
+
+    const userPilesRef = collection(db, `users/${user.uid}/piles`);
+    const oldPile = newPile === "good" ? "needsWork" : "good";
+
+    try {
+      // Check if the letter is already in the correct pile
+      const existingQuery = query(userPilesRef, where("letter", "==", letter), where("pileType", "==", newPile));
+      const existingSnapshot = await getDocs(existingQuery);
+      
+      if (!existingSnapshot.empty) {
+        console.log(`Letter "${letter}" is already in the ${newPile} pile, skipping update.`);
+        return; // Exit early if letter is already in the correct pile
       }
+
+      // Find and remove from the old pile if it exists
+      const oldQuery = query(userPilesRef, where("letter", "==", letter), where("pileType", "==", oldPile));
+      const oldSnapshot = await getDocs(oldQuery);
+
+      oldSnapshot.forEach(async (doc) => {
+        await deleteDoc(doc.ref);
+      });
+
+      // Add the letter to the new pile
+      await addDoc(userPilesRef, {
+        pileType: newPile,
+        letter,
+        createdAt: serverTimestamp(),
+      });
+
     } catch (error) {
-      console.error("Error adding letter to pile:", error);
+      console.error("Error moving letter between piles:", error);
     }
   };
 
+  // Load SVG paths
   useEffect(() => {
     const loadPaths = async () => {
       try {
@@ -134,7 +147,7 @@ const LetterGrid: React.FC = () => {
 
   const handleTraceComplete = (isCorrect: boolean) => {
     if (selectedLetter) {
-      addLetterToPile(selectedLetter, isCorrect ? "good" : "needsWork");
+      moveLetterBetweenPiles(selectedLetter, isCorrect ? "good" : "needsWork");
     }
     setIsTracing(false);
   };
@@ -147,10 +160,11 @@ const LetterGrid: React.FC = () => {
       setIsTracing(false);
     }
   };
+
   const handleLogout = async () => {
     await signOut(auth);
   };
-  
+
   // If no user is logged in, show authentication form
   if (!user) {
     return <Auth onAuthChange={setUser} />;
