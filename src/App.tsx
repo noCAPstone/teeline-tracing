@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import HomePage from './components/HomePage';
 import LetterGrid from './components/LetterGrid';
+import { User, onAuthStateChanged } from 'firebase/auth';
+import { auth } from './firebaseConfig';
 
 const App: React.FC = () => {
+  const [user, setUser] = useState<User | null>(null);
   const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth <= 768);
 
   useEffect(() => {
@@ -11,6 +15,13 @@ const App: React.FC = () => {
 
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
+  }, []);
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+
+    return () => unsubscribe();
   }, []);
 
   const styles: Record<string, React.CSSProperties> = {
@@ -39,8 +50,7 @@ const App: React.FC = () => {
 
   return (
     <div style={styles.appContainer}>
-      <h1 style={styles.title}>Teeline Alphabet</h1>
-      <LetterGrid />
+      {user ? <LetterGrid /> : <HomePage />}
     </div>
   );
 };
