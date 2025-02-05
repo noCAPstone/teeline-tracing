@@ -3,7 +3,7 @@ import WriteOnCard from "./WriteOnCard";
 import SVGPreview from "./SVGPreview";
 import Auth from "./Auth"; // Import the authentication component
 import { User, onAuthStateChanged, signOut } from "firebase/auth";
-import { getFirestore, collection, getDocs, addDoc, serverTimestamp } from "firebase/firestore";
+import { getFirestore, collection, getDocs, addDoc, serverTimestamp, deleteDoc, doc} from "firebase/firestore";
 import { auth, app } from "../firebaseConfig";
 
 const db = getFirestore(app);
@@ -25,6 +25,15 @@ const LetterGrid: React.FC = () => {
   const [letterPaths, setLetterPaths] = useState<Record<string, string>>({});
   const [goodPile, setGoodPile] = useState<string[]>([]);
   const [needsWorkPile, setNeedsWorkPile] = useState<string[]>([]);
+  const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth <= 768);
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Listen for authentication state changes
   useEffect(() => {
@@ -69,32 +78,55 @@ const LetterGrid: React.FC = () => {
   // Add a letter to the appropriate pile in Firestore
   const addLetterToPile = async (letter: string, pileType: "good" | "needsWork") => {
     if (!user) return;
-
+  
     try {
       const userPilesRef = collection(db, `users/${user.uid}/piles`);
       const snapshot = await getDocs(userPilesRef);
-      let exists = false;
-
+      let existingDocId: string | null = null;
+      let existingPileType: string | null = null;
+  
       snapshot.forEach((docItem) => {
-        if (docItem.data().letter === letter && docItem.data().pileType === pileType) {
-          exists = true;
+        const data = docItem.data();
+        if (data.letter === letter) {
+          existingDocId = docItem.id;
+          existingPileType = data.pileType;
         }
       });
-
-      if (!exists) {
-        await addDoc(userPilesRef, {
-          pileType,
-          letter,
-          createdAt: serverTimestamp(),
-        });
-
-        setGoodPile((prev) => (pileType === "good" ? [...prev, letter] : prev.filter((l) => l !== letter)));
-        setNeedsWorkPile((prev) => (pileType === "needsWork" ? [...prev, letter] : prev.filter((l) => l !== letter)));
+  
+      // If the letter is already in the correct pile, do nothing
+      if (existingPileType === pileType) return;
+  
+      // If the letter exists in the wrong pile, remove it first
+      if (existingDocId) {
+        await deleteDoc(doc(db, `users/${user.uid}/piles/${existingDocId}`));
       }
+  
+      // Add the letter to the new pile
+      await addDoc(userPilesRef, {
+        pileType,
+        letter,
+        createdAt: serverTimestamp(),
+      });
+  
+      // Update state to reflect the movement of the letter
+      setGoodPile((prev) =>
+        pileType === "good"
+          ? [...prev, letter].filter((l, i, arr) => arr.indexOf(l) === i) // Remove duplicates
+          : prev.filter((l) => l !== letter)
+      );
+  
+      setNeedsWorkPile((prev) =>
+        pileType === "needsWork"
+          ? [...prev, letter].filter((l, i, arr) => arr.indexOf(l) === i)
+          : prev.filter((l) => l !== letter)
+      );
+  
     } catch (error) {
       console.error("Error adding letter to pile:", error);
     }
   };
+  
+  
 
   useEffect(() => {
     const loadPaths = async () => {
@@ -156,7 +188,133 @@ const LetterGrid: React.FC = () => {
     return <Auth onAuthChange={setUser} />;
   }
 
-
+  const styles: Record<string, React.CSSProperties> = {
+  
+    nextButton: {
+      padding: isMobile ? '10px 20px' : '12px 24px',
+      backgroundColor: '#4CAF50',
+      color: '#FFFFFF',
+      borderRadius: '16px',
+      cursor: 'pointer',
+      marginTop: '10px',
+    },
+    container: {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      minHeight: '100vh',
+      width: '75vw',
+      backgroundColor: '#E6F2ED',
+      padding: isMobile ? '15px' : '20px',
+      fontFamily: "'Baloo 2', cursive",
+      borderRadius: '16px',
+    },
+    grid: {
+      display: 'grid',
+      gridTemplateColumns: isMobile ? 'repeat(auto-fit, minmax(100px, 1fr))' : 'repeat(auto-fit, minmax(150px, 1fr))',
+      gap: isMobile ? '20px' : '30px',
+      width: '100%',
+      height: '50%',
+      fontFamily: "'Baloo 2', cursive",
+      maxWidth: '800px',
+      paddingLeft: isMobile ? '50px': '20px',
+    },
+    card: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      border: '3px solid #D1E1DB',
+      borderRadius: '16px',
+      background: 'linear-gradient(135deg, #A6C3BB, #D1E1DB)',
+      boxShadow: '6px 6px 0px rgba(0, 0, 0, 0.1)',
+      width: isMobile ? '100px' : '150px',
+      height: isMobile ? '100px' : '150px',
+      cursor: 'pointer',
+      fontSize: isMobile ? '18px' : '24px',
+      fontWeight: 'bold',
+      fontFamily: "'Baloo 2', cursive",
+      textAlign: 'center',
+      color: '#2F3D38',
+      opacity: 0,
+      transform: 'translateY(-50px)',
+      animation: 'dropIn 0.5s ease-out forwards',
+      transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+    },
+    cardHover: {
+      transform: 'translateY(-4px)',
+      boxShadow: '8px 8px 0px rgba(0, 0, 0, 0.3)',
+      background: 'linear-gradient(135deg, #D1E1DB, #A6C3BB)',
+    },
+    previewContainer: {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      gap: '20px',
+      padding: '20px',
+      borderRadius: '16px',
+      background: '#E6F2ED',
+      boxShadow: '6px 6px 0px rgba(0, 0, 0, 0.2)',
+    },
+    title: {
+      fontSize: isMobile ? '24px' : '28px',
+      fontWeight: 'bold',
+      color: '#2F3D38',
+    },
+    traceButton: {
+      padding: isMobile ? '10px 20px' : '12px 24px',
+      backgroundColor: '#6D8B83',
+      color: '#FFFFFF',
+      borderRadius: '16px',
+      cursor: 'pointer',
+    },
+    backButton: {
+      padding: isMobile ? '10px 20px' : '12px 24px',
+      backgroundColor: '#A6C3BB',
+      color: '#2F3D38',
+      borderRadius: '16px',
+      cursor: 'pointer',
+    },
+    letter: {
+      fontSize: '48px',
+      fontWeight: 'bold',
+      color: '#2F3D38',
+    },
+    pilesContainer: {
+      display: 'flex',
+      flexDirection: isMobile ? 'column' : 'row',
+      justifyContent: 'space-between',
+      gap: '20px',
+      marginTop: '20px',
+      width: '100%',
+      maxWidth: '800px',
+      paddingLeft: '12px',
+    },
+    pile: {
+      flex: 1,
+      border: '3px dashed #A6C3BB',
+      borderRadius: '16px',
+      padding: isMobile ? '10px' : '20px',
+      backgroundColor: '#E6F2ED',
+      boxShadow: '6px 6px 0px rgba(0, 0, 0, 0.1)',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      gap: '10px',
+    },
+    logoutButton: {
+      width: "100%",
+      padding: "12px",
+      marginBottom: "20px",
+      backgroundColor: "#A6C3BB",
+      color: "#2F3D38",
+      border: "none",
+      borderRadius: "16px",
+      cursor: "pointer",
+      fontSize: "16px",
+      transition: "background 0.3s",
+    },
+  };
   return (
     <div style={styles.container}>
       {/* Hide top bar when a letter is selected */}
@@ -235,126 +393,6 @@ const LetterGrid: React.FC = () => {
   );
 }
 
-const styles: Record<string, React.CSSProperties> = {
-  
-  nextButton: {
-    padding: '12px 24px',
-    backgroundColor: '#4CAF50',
-    color: '#FFFFFF',
-    borderRadius: '16px',
-    cursor: 'pointer',
-    marginTop: '10px',
-  },
-  container: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: '100vh',
-    backgroundColor: '#E6F2ED',
-    padding: '20px',
-    fontFamily: "'Baloo 2', cursive",
-    borderRadius: '16px',
-  },
-  grid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
-    gap: '30px',
-    width: '100%',
-    maxWidth: '800px',
-  },
-  card: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    border: '3px solid #D1E1DB',
-    borderRadius: '16px',
-    background: 'linear-gradient(135deg, #A6C3BB, #D1E1DB)',
-    boxShadow: '6px 6px 0px rgba(0, 0, 0, 0.1)',
-    width: '150px',
-    height: '150px',
-    cursor: 'pointer',
-    fontSize: '24px',
-    fontWeight: 'bold',
-    textAlign: 'center',
-    color: '#2F3D38',
-    opacity: 0,
-    transform: 'translateY(-50px)',
-    animation: 'dropIn 0.5s ease-out forwards',
-    transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-  },
-  cardHover: {
-    transform: 'translateY(-4px)',
-    boxShadow: '8px 8px 0px rgba(0, 0, 0, 0.3)',
-    background: 'linear-gradient(135deg, #D1E1DB, #A6C3BB)',
-  },
-  previewContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    gap: '20px',
-    padding: '20px',
-    borderRadius: '16px',
-    background: '#E6F2ED',
-    boxShadow: '6px 6px 0px rgba(0, 0, 0, 0.2)',
-  },
-  title: {
-    fontSize: '28px',
-    fontWeight: 'bold',
-    color: '#2F3D38',
-  },
-  traceButton: {
-    padding: '12px 24px',
-    backgroundColor: '#6D8B83',
-    color: '#FFFFFF',
-    borderRadius: '16px',
-    cursor: 'pointer',
-  },
-  backButton: {
-    padding: '12px 24px',
-    backgroundColor: '#A6C3BB',
-    color: '#2F3D38',
-    borderRadius: '16px',
-    cursor: 'pointer',
-  },
-  letter: {
-    fontSize: '48px',
-    fontWeight: 'bold',
-    color: '#2F3D38',
-  },
-  pilesContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: '20px',
-    marginTop: '20px',
-    width: '100%',
-    maxWidth: '800px',
-  },
-  pile: {
-    flex: 1,
-    border: '3px dashed #A6C3BB',
-    borderRadius: '16px',
-    padding: '20px',
-    backgroundColor: '#E6F2ED',
-    boxShadow: '6px 6px 0px rgba(0, 0, 0, 0.1)',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    gap: '10px',
-  },
-  logoutButton: {
-    width: "100%",
-    padding: "12px",
-    marginBottom: "20px",
-    backgroundColor: "#A6C3BB",
-    color: "#2F3D38",
-    border: "none",
-    borderRadius: "16px",
-    cursor: "pointer",
-    fontSize: "16px",
-    transition: "background 0.3s",
-  },
-};
+
 
 export default LetterGrid;
