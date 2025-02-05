@@ -276,7 +276,7 @@ const LetterGrid: React.FC = () => {
       cursor: 'pointer',
       fontSize: isMobile ? '18px' : '24px',
       fontWeight: 'bold',
-      fontFamily: "'Baloo 2', cursive",
+      fontFamily: "'Baloo 2'",
       textAlign: 'center',
       color: '#2F3D38',
       opacity: 0,

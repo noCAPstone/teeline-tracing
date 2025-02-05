@@ -49,7 +49,7 @@ const styles: Record<string, React.CSSProperties> = {
     justifyContent: "center",
     height: "100vh",
     backgroundColor: "#E6F2ED",
-    fontFamily: "'Baloo 2', cursive",
+    fontFamily: "'Baloo 2'",
   },
   title: {
     fontSize: "32px",

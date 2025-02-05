@@ -67,7 +67,7 @@ const styles: Record<string, React.CSSProperties> = {
     height: "100vh",
     width: "100vw",
     backgroundColor: "#E6F2ED",
-    fontFamily: "'Baloo 2', cursive",
+    fontFamily: "'Baloo 2'",
     borderRadius: "16px",
   },
   authBox: {
