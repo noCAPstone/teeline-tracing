@@ -14,6 +14,7 @@ const WriteOnCard: React.FC<WriteOnCardProps> = ({ svgPath, similarityThreshold,
   const [isDrawing, setIsDrawing] = useState(false);
   const [isErasing, setIsErasing] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
+  
 
   const STAGE_WIDTH = 400;
   const STAGE_HEIGHT = 400;
