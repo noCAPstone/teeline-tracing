@@ -1,5 +1,5 @@
 :root {
-  font-family: "Baloo 2", "Poppins", "Fredoka One", Inter, system-ui, sans-serif;
+  font-family: "Baloo 2", system-ui;
   line-height: 1.5;
   font-weight: 400;
 
@@ -17,7 +17,7 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background-color: #fdf8e1; /* Soft yellow for retro vibe */
+  
   display: flex;
   justify-content: center;
   align-items: center;

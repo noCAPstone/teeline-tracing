@@ -43,7 +43,7 @@ const App: React.FC = () => {
       marginBottom: '20px',
       fontSize: isMobile ? '28px' : '36px', // Smaller title font for mobile
       color: '#2F3D38',
-      fontFamily: "'Baloo 2', cursive",
+      fontFamily: "'Baloo 2'",
       textShadow: '3px 3px 0px #6D8B83, 5px 5px 0px #A6C3BB',
     },
   };
