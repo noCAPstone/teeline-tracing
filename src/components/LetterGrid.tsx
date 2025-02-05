@@ -203,7 +203,36 @@ const LetterGrid: React.FC = () => {
   }
 
   const styles: Record<string, React.CSSProperties> = {
-  
+    levelContainer: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center", // Centers content horizontally
+      justifyContent: "center", // Centers content vertically
+      width: "100%", // Ensures it spans the container
+      margin: "20px 0", // Adds spacing above and below
+    },
+    levelTitle: {
+      fontSize: "24px",
+      fontWeight: "bold",
+      color: "#2F3D38",
+      fontFamily: "'Baloo 2', cursive",
+      marginBottom: "10px", // Adds space between the title and select
+      textAlign: "center",
+    },
+    levelSelect: {
+      padding: "10px 15px",
+      fontSize: "18px",
+      fontFamily: "'Baloo 2', cursive",
+      fontWeight: "bold",
+      border: "2px solid #6D8B83",
+      borderRadius: "12px",
+      backgroundColor: "#A6C3BB",
+      color: "#2F3D38",
+      cursor: "pointer",
+      transition: "background 0.3s, box-shadow 0.2s",
+      outline: "none",
+      textAlign: "center",
+    },
     nextButton: {
       padding: isMobile ? '10px 20px' : '12px 24px',
       backgroundColor: '#4CAF50',
@@ -335,12 +364,14 @@ const LetterGrid: React.FC = () => {
       {!selectedLetter && (
         <div style={styles.topBar}>
           <h2 style={styles.title}>Welcome, {user?.email}</h2>
-          <h2>Choose your level</h2>
-          <select value={selectedLevel} onChange={handleLevelChange} style={styles.levelSelect}> 
-            <option value='beginner'>Beginner</option>
-            <option value='intermediate'>Intermediate</option>
-            <option value='advanced'>Advanced</option>
-          </select>
+          <div style={styles.levelContainer}>
+              <h2 style={styles.levelTitle}>Choose your level</h2>
+              <select value={selectedLevel} onChange={handleLevelChange} style={styles.levelSelect}> 
+                <option value="beginner">Beginner</option>
+                <option value="intermediate">Intermediate</option>
+                <option value="advanced">Advanced</option>
+              </select>
+            </div>
           <button style={styles.logoutButton} onClick={handleLogout}>
             Logout
           </button>
