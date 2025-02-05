@@ -5,10 +5,11 @@ import { calculateSimilarity } from "./calculateSimilarity";
 
 type WriteOnCardProps = {
   svgPath: string;
+  similarityThreshold: number;
   onComplete: (isCorrect: boolean, similarity: number) => void;
 };
 
-const WriteOnCard: React.FC<WriteOnCardProps> = ({ svgPath, onComplete }) => {
+const WriteOnCard: React.FC<WriteOnCardProps> = ({ svgPath, similarityThreshold, onComplete }) => {
   const [lines, setLines] = useState<{ points: number[] }[]>([]);
   const [isDrawing, setIsDrawing] = useState(false);
   const [isErasing, setIsErasing] = useState(false);
@@ -83,7 +84,8 @@ const WriteOnCard: React.FC<WriteOnCardProps> = ({ svgPath, onComplete }) => {
     const normalizedSvgPoints = normalizeSvgPath(svgPath);
 
     const similarity = calculateSimilarity(normalizedUserPoints, normalizedSvgPoints);
-    const isCorrect = similarity > 0.5;
+    const isCorrect = similarity >= similarityThreshold;
+    
 
     setFeedback(
       isCorrect

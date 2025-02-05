@@ -14,10 +14,17 @@ const letters: string[] = [
   "o", "p", "q", "r", "s", "t", "u",
   "v", "w", "x", "y", "z",
 ];
+const levels = {
+  'beginner': 0.5,
+  'intermediate': 0.6,
+  'advanced': 0.65,
+}
 
 const base = "/teeline-tracing";
 
 const LetterGrid: React.FC = () => {
+  const [selectedLevel, setSelectedLevel] = useState<keyof typeof levels>("beginner");
+  const [similarityThreshold, setSimilarityThreshold] = useState<number>(levels.beginner);
   const [user, setUser] = useState<User | null>(null);
   const [selectedLetter, setSelectedLetter] = useState<string | null>(null);
   const [hoveredCardIndex, setHoveredCardIndex] = useState<number | null>(null);
@@ -74,6 +81,10 @@ const LetterGrid: React.FC = () => {
 
     fetchData();
   }, [user]);
+  useEffect(() => {
+    setSimilarityThreshold(levels[selectedLevel]);
+  }, [selectedLevel]);
+
 
   // Add a letter to the appropriate pile in Firestore
   const addLetterToPile = async (letter: string, pileType: "good" | "needsWork") => {
@@ -169,6 +180,9 @@ const LetterGrid: React.FC = () => {
       addLetterToPile(selectedLetter, isCorrect ? "good" : "needsWork");
     }
     setIsTracing(false);
+  };
+  const handleLevelChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedLevel(event.target.value as keyof typeof levels);
   };
 
   const handleNextLetter = () => {
@@ -321,6 +335,12 @@ const LetterGrid: React.FC = () => {
       {!selectedLetter && (
         <div style={styles.topBar}>
           <h2 style={styles.title}>Welcome, {user?.email}</h2>
+          <h2>Choose your level</h2>
+          <select value={selectedLevel} onChange={handleLevelChange} style={styles.levelSelect}> 
+            <option value='beginner'>Beginner</option>
+            <option value='intermediate'>Intermediate</option>
+            <option value='advanced'>Advanced</option>
+          </select>
           <button style={styles.logoutButton} onClick={handleLogout}>
             Logout
           </button>
@@ -332,6 +352,7 @@ const LetterGrid: React.FC = () => {
           {isTracing ? (
             <WriteOnCard
               svgPath={letterPaths[selectedLetter]}
+              similarityThreshold={similarityThreshold}
               onComplete={handleTraceComplete}
             />
           ) : (
