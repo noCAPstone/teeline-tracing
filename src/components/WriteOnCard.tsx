@@ -115,7 +115,7 @@ const WriteOnCard: React.FC<WriteOnCardProps> = ({ svgPath, similarityThreshold,
         onTouchStart={handlePointerDown}
         onTouchMove={handlePointerMove}
         onTouchEnd={handlePointerUp}
-        style={{ border: "1px solid black", touchAction: "none" }} // Prevent page scrolling
+        style={{ border: "1px solid black", touchAction: "none" }} 
       >
         <Layer>
           <Path
