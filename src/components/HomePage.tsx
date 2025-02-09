@@ -6,9 +6,9 @@ import { auth } from "../firebaseConfig";
 
 const HomePage: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
-  const [showAuth, setShowAuth] = useState(false); // Toggles the login form
+  const [showAuth, setShowAuth] = useState(false); 
 
-  // Listen for authentication state changes
+  
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -17,7 +17,7 @@ const HomePage: React.FC = () => {
     return () => unsubscribe();
   }, []);
 
-  // If the user is logged in, render the main app (LetterGrid)
+  
   if (user) {
     return <LetterGrid />;
   }
@@ -25,10 +25,17 @@ const HomePage: React.FC = () => {
   return (
     <div style={styles.container}>
       <h1 style={styles.title}>Welcome to Teeline Tracers</h1>
-      <p style={styles.description}>
-        Learn and practice Teeline shorthand effortlessly!
-      </p>
-
+  
+      {!showAuth && (
+        <p style={styles.description}>
+          Inspired by classic note-taking methods and modern language-learning techniques, 
+          this app helps you practice tracing Teeline characters just like learning a new alphabet. 
+          Whether you're a journalist, student, or just fascinated by antiquated forms of communication, 
+          our tracing exercises will help you master Teeline one stroke at a time. 
+          Start practicing today and bring shorthand into the digital age!
+        </p>
+      )}
+  
       {!showAuth ? (
         <button style={styles.loginButton} onClick={() => setShowAuth(true)}>
           Get started
@@ -37,10 +44,10 @@ const HomePage: React.FC = () => {
         <Auth onAuthChange={setUser} />
       )}
     </div>
-  );
-};
+  )
+}
 
-// Inline styles for the homepage
+
 const styles: Record<string, React.CSSProperties> = {
   container: {
     display: "flex",

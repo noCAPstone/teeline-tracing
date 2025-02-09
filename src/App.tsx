@@ -33,7 +33,7 @@ const App: React.FC = () => {
       // minHeight: '100vh',
       height: '50%',
       background: 'radial-gradient(circle at bottom right, #2F3D38, #6D8B83 40%, #A6C3BB 70%)', 
-      padding: isMobile ? '10px' : '20px', // Example of using isMobile
+      padding: isMobile ? '10px' : '20px', 
       boxShadow: '0px 10px 20px rgba(0, 0, 0, 0.2)',
       borderRadius: '16px',
       border: '4px dotted #2F3D38',
@@ -41,7 +41,7 @@ const App: React.FC = () => {
     title: {
       textAlign: 'center',
       marginBottom: '20px',
-      fontSize: isMobile ? '28px' : '36px', // Smaller title font for mobile
+      fontSize: isMobile ? '28px' : '36px', 
       color: '#2F3D38',
       fontFamily: "'Baloo 2'",
       textShadow: '3px 3px 0px #6D8B83, 5px 5px 0px #A6C3BB',

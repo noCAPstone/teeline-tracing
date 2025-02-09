@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import WriteOnCard from "./WriteOnCard";
 import SVGPreview from "./SVGPreview";
-import Auth from "./Auth"; // Import the authentication component
+import Auth from "./Auth"; 
 import { User, onAuthStateChanged, signOut } from "firebase/auth";
 import { getFirestore, collection, getDocs, addDoc, serverTimestamp, deleteDoc, doc} from "firebase/firestore";
 import { auth, app } from "../firebaseConfig";
@@ -42,7 +42,7 @@ const LetterGrid: React.FC = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Listen for authentication state changes
+  
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -51,7 +51,7 @@ const LetterGrid: React.FC = () => {
     return () => unsubscribe();
   }, []);
 
-  // Fetch user-specific data when logged in
+  
   useEffect(() => {
     if (!user) return;
 
@@ -86,7 +86,7 @@ const LetterGrid: React.FC = () => {
   }, [selectedLevel]);
 
 
-  // Add a letter to the appropriate pile in Firestore
+  
   const addLetterToPile = async (letter: string, pileType: "good" | "needsWork") => {
     if (!user) return;
   
@@ -104,25 +104,25 @@ const LetterGrid: React.FC = () => {
         }
       });
   
-      // If the letter is already in the correct pile, do nothing
+      
       if (existingPileType === pileType) return;
   
-      // If the letter exists in the wrong pile, remove it first
+      
       if (existingDocId) {
         await deleteDoc(doc(db, `users/${user.uid}/piles/${existingDocId}`));
       }
   
-      // Add the letter to the new pile
+      
       await addDoc(userPilesRef, {
         pileType,
         letter,
         createdAt: serverTimestamp(),
       });
-  
-      // Update state to reflect the movement of the letter
+
+      
       setGoodPile((prev) =>
         pileType === "good"
-          ? [...prev, letter].filter((l, i, arr) => arr.indexOf(l) === i) // Remove duplicates
+          ? [...prev, letter].filter((l, i, arr) => arr.indexOf(l) === i) 
           : prev.filter((l) => l !== letter)
       );
   
@@ -166,6 +166,16 @@ const LetterGrid: React.FC = () => {
     loadPaths();
   }, []);
 
+  
+  useEffect(() => {
+    if (goodPile.length === 0 && needsWorkPile.length === letters.length - 1) {
+      document.body.classList.add('shake');
+      setTimeout(() => document.body.classList.remove('shake'), 500);
+      
+      alert("wow i didn't really think it was possible to do this badly. um. keep trying...");
+    }
+  }, [goodPile, needsWorkPile, letters.length]);
+
   const handleCardClick = (letter: string) => {
     setSelectedLetter(letter);
     setIsTracing(false);
@@ -197,7 +207,7 @@ const LetterGrid: React.FC = () => {
     await signOut(auth);
   };
   
-  // If no user is logged in, show authentication form
+  
   if (!user) {
     return <Auth onAuthChange={setUser} />;
   }
@@ -206,17 +216,17 @@ const LetterGrid: React.FC = () => {
     levelContainer: {
       display: "flex",
       flexDirection: "column",
-      alignItems: "center", // Centers content horizontally
-      justifyContent: "center", // Centers content vertically
-      width: "100%", // Ensures it spans the container
-      margin: "20px 0", // Adds spacing above and below
+      alignItems: "center", 
+      justifyContent: "center", 
+      width: "100%", 
+      margin: "20px 0", 
     },
     levelTitle: {
       fontSize: "24px",
       fontWeight: "bold",
       color: "#2F3D38",
       fontFamily: "'Baloo 2'",
-      marginBottom: "10px", // Adds space between the title and select
+      marginBottom: "10px", 
       textAlign: "center",
     },
     levelSelect: {
@@ -360,7 +370,6 @@ const LetterGrid: React.FC = () => {
   };
   return (
     <div style={styles.container}>
-      {/* Hide top bar when a letter is selected */}
       {!selectedLetter && (
         <div style={styles.topBar}>
           <h2 style={styles.title}>Welcome, {user?.email}</h2>
@@ -371,7 +380,7 @@ const LetterGrid: React.FC = () => {
                 <option value="intermediate">Intermediate</option>
                 <option value="advanced">Advanced</option>
               </select>
-            </div>
+          </div>
           <button style={styles.logoutButton} onClick={handleLogout}>
             Logout
           </button>

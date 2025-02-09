@@ -11,6 +11,7 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
+    "canvas-confetti": "^1.9.3",
     "firebase": "^11.2.0",
     "jsdom": "^26.0.0",
     "konva": "^9.3.18",
