@@ -166,6 +166,16 @@ const LetterGrid: React.FC = () => {
     loadPaths();
   }, []);
 
+  
+  useEffect(() => {
+    if (goodPile.length === 0 && needsWorkPile.length === letters.length - 1) {
+      document.body.classList.add('shake');
+      setTimeout(() => document.body.classList.remove('shake'), 500);
+      
+      alert("wow i didn't really think it was possible to do this badly. um. keep trying...");
+    }
+  }, [goodPile, needsWorkPile, letters.length]);
+
   const handleCardClick = (letter: string) => {
     setSelectedLetter(letter);
     setIsTracing(false);
