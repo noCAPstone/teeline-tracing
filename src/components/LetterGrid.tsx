@@ -355,9 +355,10 @@ const LetterGrid: React.FC = () => {
       gap: '10px',
     },
     logoutButton: {
-      width: "100%",
+      width: "30%",
       padding: "12px",
       marginBottom: "20px",
+      marginTop: "20px", 
       backgroundColor: "#A6C3BB",
       color: "#2F3D38",
       border: "none",
@@ -380,9 +381,6 @@ const LetterGrid: React.FC = () => {
                 <option value="advanced">Advanced</option>
               </select>
           </div>
-          <button style={styles.logoutButton} onClick={handleLogout}>
-            Logout
-          </button>
         </div>
       )}
   
@@ -454,6 +452,9 @@ const LetterGrid: React.FC = () => {
               ))}
             </div>
           </div>
+          <button style={styles.logoutButton} onClick={handleLogout}>
+            Logout
+          </button>
         </>
       )}
     </div>
