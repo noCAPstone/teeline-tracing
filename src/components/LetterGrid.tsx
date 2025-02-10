@@ -245,11 +245,10 @@ const LetterGrid: React.FC = () => {
     },
     nextButton: {
       padding: isMobile ? '10px 20px' : '12px 24px',
-      backgroundColor: '#4CAF50',
-      color: '#FFFFFF',
+      backgroundColor: '#A6C3BB',
+      color: '#2F3D38',
       borderRadius: '16px',
       cursor: 'pointer',
-      marginTop: '10px',
     },
     container: {
       display: 'flex',
@@ -316,8 +315,8 @@ const LetterGrid: React.FC = () => {
     },
     traceButton: {
       padding: isMobile ? '10px 20px' : '12px 24px',
-      backgroundColor: '#6D8B83',
-      color: '#FFFFFF',
+      backgroundColor: '#A6C3BB',
+      color: '#2F3D38',
       borderRadius: '16px',
       cursor: 'pointer',
     },
@@ -388,16 +387,23 @@ const LetterGrid: React.FC = () => {
       )}
   
       {selectedLetter ? (
+        
         <div style={styles.previewContainer}>
-          {isTracing ? (
+          {isTracing ? (<>
             <WriteOnCard
               svgPath={letterPaths[selectedLetter]}
               similarityThreshold={similarityThreshold}
               onComplete={handleTraceComplete}
             />
+            <button style={styles.backButton} onClick={() => setSelectedLetter(null)}>
+                Back to Grid
+              </button>
+          </>
+           
           ) : (
             <>
-              <h2 style={styles.title}>Teeline Version: {selectedLetter.toUpperCase()}</h2>
+              <h2 style={styles.title}>Difficulty: {selectedLevel} </h2>
+              <h2 style={styles.title}>Selected Letter: {selectedLetter.toUpperCase()}</h2>
               {letterPaths[selectedLetter] ? (
                 <SVGPreview path={letterPaths[selectedLetter]} width={400} height={400} />
               ) : (
