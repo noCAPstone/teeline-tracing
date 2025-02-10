@@ -312,6 +312,9 @@ const LetterGrid: React.FC = () => {
       fontSize: isMobile ? '24px' : '28px',
       fontWeight: 'bold',
       color: '#2F3D38',
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
     },
     traceButton: {
       padding: isMobile ? '10px 20px' : '12px 24px',
@@ -375,6 +378,10 @@ const LetterGrid: React.FC = () => {
           <h2 style={styles.title}>Welcome, {user?.email}</h2>
           <div style={styles.levelContainer}>
               <h2 style={styles.levelTitle}>Choose your level</h2>
+              <p>To pass the beginner level, your trace needs to be 50% similar or over.</p>
+              <p>For intermediate, your trace needs to be 60% similar or over.</p>
+              <p>For advanced, your trace needs needs to be 65% similar or over.</p>
+              <p>Think you can hack it? Try now!</p>
               <select value={selectedLevel} onChange={handleLevelChange} style={styles.levelSelect}> 
                 <option value="beginner">Beginner</option>
                 <option value="intermediate">Intermediate</option>
