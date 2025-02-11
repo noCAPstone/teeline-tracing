@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import WriteOnCard from "./WriteOnCard";
 import SVGPreview from "./SVGPreview";
 import Auth from "./Auth"; 
+import { FaBaby, FaRocket, FaTrophy } from "react-icons/fa6";
 import { User, onAuthStateChanged, signOut } from "firebase/auth";
 import { getFirestore, collection, getDocs, addDoc, serverTimestamp, deleteDoc, doc} from "firebase/firestore";
 import { auth, app } from "../firebaseConfig";
@@ -15,16 +16,16 @@ const letters: string[] = [
   "v", "w", "x", "y", "z",
 ];
 const levels = {
-  'beginner': 0.5,
-  'intermediate': 0.6,
-  'advanced': 0.65,
-}
+  beginner: { threshold: 0.5, icon: <FaBaby />, tooltip: "Beginner: Tracing needs 50% accuracy." },
+  intermediate: { threshold: 0.6, icon: <FaRocket />, tooltip: "Intermediate: Tracing needs 60% accuracy." },
+  advanced: { threshold: 0.65, icon: <FaTrophy />, tooltip: "Advanced: Tracing needs 65% accuracy." },
+};
 
 const base = "/teeline-tracing";
 
 const LetterGrid: React.FC = () => {
   const [selectedLevel, setSelectedLevel] = useState<keyof typeof levels>("beginner");
-  const [similarityThreshold, setSimilarityThreshold] = useState<number>(levels.beginner);
+  const [similarityThreshold, setSimilarityThreshold] = useState<number>(levels.beginner.threshold);
   const [user, setUser] = useState<User | null>(null);
   const [selectedLetter, setSelectedLetter] = useState<string | null>(null);
   const [hoveredCardIndex, setHoveredCardIndex] = useState<number | null>(null);
@@ -82,7 +83,7 @@ const LetterGrid: React.FC = () => {
     fetchData();
   }, [user]);
   useEffect(() => {
-    setSimilarityThreshold(levels[selectedLevel]);
+    setSimilarityThreshold(levels[selectedLevel].threshold);
   }, [selectedLevel]);
 
 
@@ -191,8 +192,8 @@ const LetterGrid: React.FC = () => {
     }
     setIsTracing(false);
   };
-  const handleLevelChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedLevel(event.target.value as keyof typeof levels);
+  const handleLevelSelect = (level: keyof typeof levels) => {
+    setSelectedLevel(level);
   };
 
   const handleNextLetter = () => {
@@ -216,179 +217,193 @@ const LetterGrid: React.FC = () => {
     levelContainer: {
       display: "flex",
       flexDirection: "column",
-      alignItems: "center", 
-      justifyContent: "center", 
-      width: "100%", 
-      margin: "20px 0", 
+      alignItems: "center",
+      justifyContent: "center",
+      width: "100%",
+      margin: "20px 0",
     },
     levelTitle: {
       fontSize: "24px",
       fontWeight: "bold",
-      color: "#2F3D38",
+      color: "#D72638",
       fontFamily: "'Baloo 2'",
-      marginBottom: "10px", 
+      marginBottom: "10px",
       textAlign: "center",
     },
-    levelSelect: {
-      padding: "10px 15px",
-      fontSize: "18px",
-      fontFamily: "'Baloo 2'",
-      fontWeight: "bold",
-      border: "2px solid #6D8B83",
-      borderRadius: "12px",
-      backgroundColor: "#A6C3BB",
-      color: "#2F3D38",
+    levelIcons: {
+      display: "flex",
+      gap: "15px",
+    },
+    levelIcon: {
+      fontSize: "32px",
+      padding: "10px",
+      borderRadius: "50%",
+      backgroundColor: "powderblue",
+      color: "#311847",
       cursor: "pointer",
-      transition: "background 0.3s, box-shadow 0.2s",
-      outline: "none",
-      textAlign: "center",
+      transition: "transform 0.2s ease, box-shadow 0.2s ease",
+      boxShadow: "3px 3px 0px #D72638",
+    },
+    selectedLevel: {
+      transform: "scale(1.2)",
+      backgroundColor: "#EE964B",
+      boxShadow: "5px 5px 0px #D72638",
     },
     nextButton: {
-      padding: isMobile ? '10px 20px' : '12px 24px',
-      backgroundColor: '#A6C3BB',
-      color: '#2F3D38',
-      borderRadius: '16px',
-      cursor: 'pointer',
+      padding: isMobile ? "10px 20px" : "12px 24px",
+      backgroundColor: "#EE964B",
+      color: "#F8F1E5",
+      borderRadius: "16px",
+      cursor: "pointer",
     },
     container: {
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      minHeight: '100vh',
-      width: '75vw',
-      backgroundColor: '#E6F2ED',
-      padding: isMobile ? '15px' : '20px',
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      minHeight: "100vh",
+      width: "75vw",
+      //backgroundColor: "#F8F1E5",
+      padding: isMobile ? "15px" : "20px",
       fontFamily: "'Baloo 2'",
-      borderRadius: '16px',
+      borderRadius: "16px",
     },
     grid: {
-      display: 'grid',
-      gridTemplateColumns: isMobile ? 'repeat(auto-fit, minmax(100px, 1fr))' : 'repeat(auto-fit, minmax(150px, 1fr))',
-      gap: isMobile ? '20px' : '30px',
-      width: '100%',
-      height: '50%',
+      display: "grid",
+      gridTemplateColumns: isMobile
+        ? "repeat(auto-fit, minmax(100px, 1fr))"
+        : "repeat(auto-fit, minmax(150px, 1fr))",
+      gap: isMobile ? "20px" : "30px",
+      width: "100%",
+      height: "50%",
       fontFamily: "'Baloo 2'",
-      maxWidth: '800px',
-      paddingLeft: isMobile ? '50px': '20px',
+      maxWidth: "800px",
+      paddingLeft: isMobile ? "50px" : "20px",
     },
     card: {
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      border: '3px solid #D1E1DB',
-      borderRadius: '16px',
-      background: 'linear-gradient(135deg, #A6C3BB, #D1E1DB)',
-      boxShadow: '6px 6px 0px rgba(0, 0, 0, 0.1)',
-      width: isMobile ? '100px' : '150px',
-      height: isMobile ? '100px' : '150px',
-      cursor: 'pointer',
-      fontSize: isMobile ? '18px' : '24px',
-      fontWeight: 'bold',
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      border: "3px solid #D72638",
+      borderRadius: "16px",
+      background: "linear-gradient(135deg, #58A4B0, #EE964B)",
+      boxShadow: "6px 6px 0px rgba(0, 0, 0, 0.2)",
+      width: isMobile ? "100px" : "150px",
+      height: isMobile ? "100px" : "150px",
+      cursor: "pointer",
+      fontSize: isMobile ? "18px" : "24px",
+      fontWeight: "bold",
       fontFamily: "'Baloo 2'",
-      textAlign: 'center',
-      color: '#2F3D38',
+      textAlign: "center",
+      color: "#F8F1E5",
       opacity: 0,
-      transform: 'translateY(-50px)',
-      animation: 'dropIn 0.5s ease-out forwards',
-      transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+      transform: "translateY(-50px)",
+      animation: "dropIn 0.5s ease-out forwards",
+      transition: "transform 0.2s ease, box-shadow 0.2s ease",
     },
     cardHover: {
-      transform: 'translateY(-4px)',
-      boxShadow: '8px 8px 0px rgba(0, 0, 0, 0.3)',
-      background: 'linear-gradient(135deg, #D1E1DB, #A6C3BB)',
+      transform: "translateY(-4px)",
+      boxShadow: "8px 8px 0px rgba(0, 0, 0, 0.3)",
+      background: "linear-gradient(135deg, #EE964B, #58A4B0)",
     },
     previewContainer: {
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      gap: '20px',
-      padding: '20px',
-      borderRadius: '16px',
-      background: '#E6F2ED',
-      boxShadow: '6px 6px 0px rgba(0, 0, 0, 0.2)',
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      gap: "20px",
+      padding: "20px",
+      borderRadius: "16px",
+      background: "#F4D06F",
+      boxShadow: "6px 6px 0px rgba(0, 0, 0, 0.3)",
     },
     title: {
-      fontSize: isMobile ? '24px' : '28px',
-      fontWeight: 'bold',
-      color: '#2F3D38',
+      fontSize: isMobile ? "24px" : "28px",
+      fontWeight: "bold",
+      color: "#311847",
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
     },
     traceButton: {
-      padding: isMobile ? '10px 20px' : '12px 24px',
-      backgroundColor: '#A6C3BB',
-      color: '#2F3D38',
-      borderRadius: '16px',
-      cursor: 'pointer',
+      padding: isMobile ? "10px 20px" : "12px 24px",
+      backgroundColor: "#58A4B0",
+      color: "#F8F1E5",
+      borderRadius: "16px",
+      cursor: "pointer",
     },
     backButton: {
-      padding: isMobile ? '10px 20px' : '12px 24px',
-      backgroundColor: '#A6C3BB',
-      color: '#2F3D38',
-      borderRadius: '16px',
-      cursor: 'pointer',
+      padding: isMobile ? "10px 20px" : "12px 24px",
+      backgroundColor: "#D72638",
+      color: "#F8F1E5",
+      borderRadius: "16px",
+      cursor: "pointer",
     },
     letter: {
-      fontSize: '48px',
-      fontWeight: 'bold',
-      color: '#2F3D38',
+      fontSize: "48px",
+      fontWeight: "bold",
+      color: "#311847",
     },
     pilesContainer: {
-      display: 'flex',
-      flexDirection: isMobile ? 'column' : 'row',
-      justifyContent: 'space-between',
-      gap: '20px',
-      marginTop: '20px',
-      width: '100%',
-      maxWidth: '800px',
-      paddingLeft: '12px',
+      display: "flex",
+      flexDirection: isMobile ? "column" : "row",
+      justifyContent: "space-between",
+      gap: "20px",
+      marginTop: "20px",
+      width: "100%",
+      maxWidth: "800px",
+      paddingLeft: "12px",
     },
     pile: {
       flex: 1,
-      border: '3px dashed #A6C3BB',
-      borderRadius: '16px',
-      padding: isMobile ? '10px' : '20px',
-      backgroundColor: '#E6F2ED',
-      boxShadow: '6px 6px 0px rgba(0, 0, 0, 0.1)',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      gap: '10px',
+      border: "3px dashed #EE964B",
+      borderRadius: "16px",
+      padding: isMobile ? "10px" : "20px",
+      backgroundColor: "#F4D06F",
+      boxShadow: "6px 6px 0px rgba(0, 0, 0, 0.2)",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      gap: "10px",
     },
     logoutButton: {
       width: "30%",
       padding: "12px",
       marginBottom: "20px",
-      marginTop: "20px", 
-      backgroundColor: "#A6C3BB",
-      color: "#2F3D38",
+      marginTop: "20px",
+      backgroundColor: "#D72638",
+      color: "#F8F1E5",
       border: "none",
       borderRadius: "16px",
       cursor: "pointer",
       fontSize: "16px",
       transition: "background 0.3s",
     },
-  };
+};
+
   return (
     <div style={styles.container}>
       {!selectedLetter && (
         <div style={styles.topBar}>
           <h2 style={styles.title}>Welcome, {user?.email}</h2>
           <div style={styles.levelContainer}>
-              <h2 style={styles.levelTitle}>Choose your level</h2>
-              <p>To pass the beginner level, your trace needs to be 50% similar or over.</p>
-              <p>For intermediate, your trace needs to be 60% similar or over.</p>
-              <p>For advanced, your trace needs needs to be 65% similar or over.</p>
-              <p>Think you can hack it? Try now!</p>
-              <select value={selectedLevel} onChange={handleLevelChange} style={styles.levelSelect}> 
-                <option value="beginner">Beginner</option>
-                <option value="intermediate">Intermediate</option>
-                <option value="advanced">Advanced</option>
-              </select>
-          </div>
+            <h2 style={styles.levelTitle}>Choose Your Level</h2>
+            <div style={styles.levelIcons}>
+              {Object.entries(levels).map(([level, data]) => (
+                <div
+                  key={level}
+                  style={{
+                    ...styles.levelIcon,
+                    ...(selectedLevel === level ? styles.selectedLevel : {}),
+                  }}
+                  onClick={() => handleLevelSelect(level as keyof typeof levels)}
+                  title={data.tooltip} // Tooltip on hover
+                >
+                  {data.icon}
+                </div>
+              ))}
+            </div>
         </div>
+      </div>
       )}
   
       {selectedLetter ? (

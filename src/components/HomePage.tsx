@@ -55,30 +55,43 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: "center",
     justifyContent: "center",
     height: "100vh",
-    backgroundColor: "#E6F2ED",
+    //backgroundColor: "#E6F8D9", // Fun pastel green
     fontFamily: "'Baloo 2'",
+    overflow: "auto",
   },
   title: {
-    fontSize: "32px",
+    fontSize: "36px",
     fontWeight: "bold",
-    color: "#2F3D38",
+    color: "#1B4332", // Deep forest green for a retro pop
     marginBottom: "10px",
+    //textShadow: "4px 4px 0px #00A878, 6px 6px 0px #D72638", // Playful layered shadow
   },
   description: {
     fontSize: "18px",
-    color: "#4A5F56",
+    color: "#2F3D38", // Soft retro gray-green
     marginBottom: "20px",
     textAlign: "center",
-    maxWidth: "400px",
+    maxWidth: "450px",
+    backgroundColor: "#F4D06F", // Vintage golden yellow
+    padding: "10px 15px",
+    borderRadius: "12px",
+    border: "3px dashed #D72638", // Fun dashed border
   },
   loginButton: {
-    padding: "12px 24px",
-    backgroundColor: "#4CAF50",
-    color: "#FFFFFF",
+    padding: "14px 28px",
+    backgroundColor: "#F4D06F", // Brighter, energetic green
+    color: "black",
     borderRadius: "16px",
     cursor: "pointer",
-    border: "none",
+    border: "3px solid #D72638", // Deep red accent
     fontSize: "18px",
+    fontWeight: "bold",
+    boxShadow: "5px 5px 0px #D72638",
+    transition: "transform 0.2s ease, box-shadow 0.2s ease",
+  },
+  loginButtonHover: {
+    transform: "translate(-3px, -3px)",
+    boxShadow: "8px 8px 0px #A01A7D", // Darker purple-red for depth
   },
 };
 

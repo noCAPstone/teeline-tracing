@@ -170,38 +170,51 @@ const styles: Record<string, React.CSSProperties> = {
     marginTop: "10px",
   },
   button: {
-    padding:'12px 24px',
-      backgroundColor: '#A6C3BB',
-      color: '#2F3D38',
-      borderRadius: '16px',
-      cursor: 'pointer',
+    padding: "12px 24px",
+    backgroundColor: "#EE964B", // Warm Retro Orange
+    color: "#F8F1E5", // Off-White
+    borderRadius: "16px",
+    cursor: "pointer",
+    fontWeight: "bold",
+    fontSize: "16px",
+    border: "3px solid #D72638", // Deep Cherry Red
+    boxShadow: "4px 4px 0px #D72638",
+    transition: "transform 0.2s ease-in-out, box-shadow 0.2s",
+  },
+  buttonHover: {
+    transform: "translate(-3px, -3px)",
+    boxShadow: "6px 6px 0px #A01A7D", // Darker Red-Orange for Depth
   },
   activeButton: {
-    padding: "10px 20px",
-    backgroundColor: "#dc3545",
+    padding: "12px 24px",
+    backgroundColor: "#D72638", // Deep Cherry Red for Active State
     color: "#fff",
-    border: "none",
-    borderRadius: "5px",
+    border: "3px solid #A01A7D",
+    borderRadius: "16px",
     cursor: "pointer",
     fontSize: "16px",
     fontWeight: "bold",
-    transition: "background-color 0.3s ease",
+    transition: "background-color 0.3s ease, transform 0.2s ease",
+    boxShadow: "4px 4px 0px #A01A7D",
   },
   feedbackPopup: {
     marginTop: "20px",
     padding: "15px 20px",
-    borderRadius: "8px",
-    backgroundColor: "#ffffff",
-    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-    border: "2px solid #ccc",
+    borderRadius: "16px",
+    backgroundColor: "#F8F1E5", // Off-white for contrast
+    boxShadow: "6px 6px 0px #EE964B", // Retro Orange Drop Shadow
+    border: "3px dashed #D72638", // Fun dashed border
     textAlign: "center",
   },
   feedbackText: {
     fontSize: "18px",
     fontWeight: "bold",
-    color: "#333",
+    color: "#311847", // Deep Purple for Retro Contrast
+    fontFamily: "'Baloo 2'",
   },
 };
+
+
 
 export default WriteOnCard;
 

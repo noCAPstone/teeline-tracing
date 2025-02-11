@@ -1,67 +1,30 @@
-:root {
-  font-family: "Baloo 2", system-ui, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
 
-  color-scheme: light dark;
-  color: #2f4f4f; /* Dark slate gray for text */
-  background-color: #e8f8f5; /* Seafoam green background */
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+#root{
+ background: 'yellow';
 }
-
-body {
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
-  
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-image: radial-gradient(circle at top left, #b2e3d9, #d5f5f0 30%, #e8f8f5 70%);
-}
-
-#root {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  max-width: 1200px;
-  min-height: 100vh;
-  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
-  background: linear-gradient(
-    135deg,
-    #d5f5f0 0%,
-    #e8f8f5 50%,
-    #d5f5f0 100%
-  ); /* Reciprocal gradient */
-}
-
 
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
   text-align: center;
   font-family: "Baloo 2";
-  color: #66cdaa; /* Seafoam green for titles */
-  text-shadow: 3px 3px 0 #b2e3d9, 6px 6px 0 #d5f5f0;
+  color: #D72638; /* Deep Cherry Red */
+  text-shadow: 3px 3px 0 #F4D06F, 6px 6px 0 #EE964B;
 }
 
 a {
   font-weight: 500;
-  color: #2f4f4f; /* Slate gray */
+  color: #2f4f4f;
   text-decoration: none;
   font-style: italic;
-  border-bottom: 2px dashed #66cdaa; /* Seafoam underline */
+  border-bottom: 2px dashed #D72638;
 }
 
 a:hover {
-  color: #4caf88;
+  color: #D72638;
 }
+
 
 button {
   border-radius: 16px;
@@ -70,7 +33,7 @@ button {
   font-size: 1.2em;
   font-weight: bold;
   font-family: "Baloo 2";
-  background: linear-gradient(135deg, #b2e3d9, #d5f5f0);
+  background: "#F4D06F";
   color: #2f4f4f;
   cursor: pointer;
   box-shadow: 4px 4px 0px #a3dbcc;
@@ -108,9 +71,9 @@ svg {
 }
 
 path {
-  stroke: #66cdaa;
+  stroke: "black";
   stroke-width: 6;
-  fill: none;
+  fill: 5;
   stroke-linecap: round;
   stroke-linejoin: round;
   opacity: 0.95;
